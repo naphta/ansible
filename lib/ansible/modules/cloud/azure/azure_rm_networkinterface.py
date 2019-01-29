@@ -12,7 +12,7 @@ __metaclass__ = type
 
 ANSIBLE_METADATA = {'metadata_version': '1.1',
                     'status': ['preview'],
-                    'supported_by': 'certified'}
+                    'supported_by': 'community'}
 
 
 DOCUMENTATION = '''
@@ -46,11 +46,9 @@ options:
         choices:
             - absent
             - present
-        required: false
     location:
         description:
             - Valid azure location. Defaults to location of the resource group.
-        required: false
     virtual_network:
         description:
             - An existing virtual network with which the network interface will be associated. Required
@@ -139,6 +137,9 @@ options:
             public_ip_address_name:
                 description:
                     - Name of the public ip address. None for disable ip address.
+                aliases:
+                    - public_ip_address
+                    - public_ip_name
             public_ip_allocation_method:
                 description:
                     - public ip allocation method.
@@ -192,6 +193,12 @@ options:
             - ip_forwarding
         type: bool
         default: False
+        version_added: 2.7
+    dns_servers:
+        description:
+            - Which DNS servers should the NIC lookup
+            - List of IP's
+        type: list
         version_added: 2.7
 extends_documentation_fragment:
     - azure
@@ -290,6 +297,15 @@ EXAMPLES = '''
           - name: ipconfig1
             public_ip_address_name: publicip001
             primary: True
+
+    - name: Create a network interface with dns servers
+      azure_rm_networkinterface:
+        name: nic009
+        resource_group: Testing
+        virtual_network: vnet001
+        subnet_name: subnet001
+        dns_servers:
+          - 8.8.8.8
 
     - name: Delete network interface
       azure_rm_networkinterface:
@@ -393,12 +409,13 @@ def nic_to_dict(nic):
             internal_fqdn=nic.dns_settings.internal_fqdn
         ),
         ip_configurations=ip_configurations,
-        ip_configuration=ip_configurations[0] if len(ip_configurations) == 1 else None,  # for compatiable issue, keep this field
+        ip_configuration=ip_configurations[0] if len(ip_configurations) == 1 else None,  # for compatible issue, keep this field
         mac_address=nic.mac_address,
         enable_ip_forwarding=nic.enable_ip_forwarding,
         provisioning_state=nic.provisioning_state,
         etag=nic.etag,
         enable_accelerated_networking=nic.enable_accelerated_networking,
+        dns_servers=nic.dns_settings.dns_servers,
     )
 
 
@@ -436,6 +453,7 @@ class AzureRMNetworkInterface(AzureRMModuleBase):
             os_type=dict(type='str', choices=['Windows', 'Linux'], default='Linux'),
             open_ports=dict(type='list'),
             enable_ip_forwarding=dict(type='bool', aliases=['ip_forwarding'], default=False),
+            dns_servers=dict(type='list'),
         )
 
         required_if = [
@@ -461,6 +479,7 @@ class AzureRMNetworkInterface(AzureRMModuleBase):
         self.open_ports = None
         self.enable_ip_forwarding = None
         self.ip_configurations = None
+        self.dns_servers = None
 
         self.results = dict(
             changed=False,
@@ -494,7 +513,7 @@ class AzureRMNetworkInterface(AzureRMModuleBase):
         self.security_group = self.parse_resource_to_dict(self.security_group or self.name)
 
         if self.state == 'present' and not self.ip_configurations:
-            # construct the ip_configurations array for compatiable
+            # construct the ip_configurations array for compatible
             self.deprecate('Setting ip_configuration flatten is deprecated and will be removed.'
                            ' Using ip_configurations list to define the ip configuration', version='2.9')
             self.ip_configurations = [
@@ -538,6 +557,16 @@ class AzureRMNetworkInterface(AzureRMModuleBase):
                     self.log("CHANGED: IP forwarding set to {0} (previously {1})".format(
                         self.enable_ip_forwarding,
                         results.get('enable_ip_forwarding')))
+                    changed = True
+
+                # We need to ensure that dns_servers are list like
+                dns_servers_res = results.get('dns_settings').get('dns_servers')
+                _dns_servers_set = sorted(self.dns_servers) if isinstance(self.dns_servers, list) else list()
+                _dns_servers_res = sorted(dns_servers_res) if isinstance(self.dns_servers, list) else list()
+                if _dns_servers_set != _dns_servers_res:
+                    self.log("CHANGED: DNS servers set to {0} (previously {1})".format(
+                        ", ".join(_dns_servers_set),
+                        ", ".join(_dns_servers_res)))
                     changed = True
 
                 if not changed:
@@ -586,7 +615,7 @@ class AzureRMNetworkInterface(AzureRMModuleBase):
         if changed:
             if self.state == 'present':
                 subnet = self.network_models.SubResource(
-                    '/subscriptions/{0}/resourceGroups/{1}/providers/Microsoft.Network/virtualNetworks/{2}/subnets/{3}'.format(
+                    id='/subscriptions/{0}/resourceGroups/{1}/providers/Microsoft.Network/virtualNetworks/{2}/subnets/{3}'.format(
                         self.virtual_network['subscription_id'],
                         self.virtual_network['resource_group'],
                         self.virtual_network['name'],
@@ -622,6 +651,10 @@ class AzureRMNetworkInterface(AzureRMModuleBase):
                     enable_ip_forwarding=self.enable_ip_forwarding,
                     network_security_group=nsg
                 )
+                if self.dns_servers:
+                    dns_settings = self.network_models.NetworkInterfaceDnsSettings(
+                        dns_servers=self.dns_servers)
+                    nic.dns_settings = dns_settings
                 self.results['state'] = self.create_or_update_nic(nic)
             elif self.state == 'absent':
                 self.log('Deleting network interface {0}'.format(self.name))

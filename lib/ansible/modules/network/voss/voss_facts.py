@@ -78,19 +78,19 @@ ansible_net_gather_subset:
 ansible_net_model:
   description: The model name returned from the device
   returned: always
-  type: string
+  type: str
 ansible_net_serialnum:
   description: The serial number of the remote device
   returned: always
-  type: string
+  type: str
 ansible_net_version:
   description: The operating system version running on the remote device
   returned: always
-  type: string
+  type: str
 ansible_net_hostname:
   description: The configured hostname of the device
   returned: always
-  type: string
+  type: str
 
 # hardware
 ansible_net_memfree_mb:
@@ -106,7 +106,7 @@ ansible_net_memtotal_mb:
 ansible_net_config:
   description: The current active config from the device
   returned: when config is configured
-  type: string
+  type: str
 
 # interfaces
 ansible_net_all_ipv4_addresses:
@@ -129,7 +129,6 @@ ansible_net_neighbors:
 import re
 
 from ansible.module_utils.network.voss.voss import run_commands
-from ansible.module_utils.network.voss.voss import check_args
 from ansible.module_utils.basic import AnsibleModule
 from ansible.module_utils.six import iteritems
 
@@ -441,9 +440,6 @@ FACT_SUBSETS = dict(
 
 VALID_SUBSETS = frozenset(FACT_SUBSETS.keys())
 
-global warnings
-warnings = list()
-
 
 def main():
     """main entry point for module execution
@@ -504,7 +500,7 @@ def main():
         key = 'ansible_net_%s' % key
         ansible_facts[key] = value
 
-    check_args(module, warnings)
+    warnings = list()
 
     module.exit_json(ansible_facts=ansible_facts, warnings=warnings)
 

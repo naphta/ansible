@@ -108,6 +108,8 @@ options:
     description:
       - Tells yum whether or not it should perform a GPG signature check on
         packages.
+      - No default setting. If the value is not set, the system setting from
+        C(/etc/yum.conf) or system default of C(no) will be used.
     type: bool
   gpgkey:
     description:
@@ -371,12 +373,12 @@ RETURN = '''
 repo:
     description: repository name
     returned: success
-    type: string
+    type: str
     sample: "epel"
 state:
     description: state of the target, after execution
     returned: success
-    type: string
+    type: str
     sample: "present"
 '''
 

@@ -1,8 +1,8 @@
 #!/usr/bin/python
 # -*- coding: utf-8 -*-
 #
-# Copyright (c) 2017 F5 Networks Inc.
-# Copyright (c) 2013 Matt Hite <mhite@hotmail.com>
+# Copyright: (c) 2017, F5 Networks Inc.
+# Copyright: (c) 2013, Matt Hite <mhite@hotmail.com>
 # GNU General Public License v3.0 (see COPYING or https://www.gnu.org/licenses/gpl-3.0.txt)
 
 from __future__ import absolute_import, division, print_function
@@ -11,7 +11,7 @@ __metaclass__ = type
 
 ANSIBLE_METADATA = {'metadata_version': '1.1',
                     'status': ['preview'],
-                    'supported_by': 'community'}
+                    'supported_by': 'certified'}
 
 DOCUMENTATION = r'''
 ---
@@ -33,6 +33,9 @@ options:
       - monitors
       - profiles
       - asm-policy-stats
+      - asm-policies
+      - asm-server-technologies
+      - asm-signature-sets
       - client-ssl-profiles
       - devices
       - device-groups
@@ -40,6 +43,21 @@ options:
       - fasthttp-profiles
       - fastl4-profiles
       - gateway-icmp-monitors
+      - gtm-pools
+      - gtm-servers
+      - gtm-wide-ips
+      - gtm-a-pools
+      - gtm-a-wide-ips
+      - gtm-aaaa-pools
+      - gtm-aaaa-wide-ips
+      - gtm-cname-pools
+      - gtm-cname-wide-ips
+      - gtm-mx-pools
+      - gtm-mx-wide-ips
+      - gtm-naptr-pools
+      - gtm-naptr-wide-ips
+      - gtm-srv-pools
+      - gtm-srv-wide-ips
       - http-monitors
       - https-monitors
       - http-profiles
@@ -77,6 +95,9 @@ options:
       - "!monitors"
       - "!profiles"
       - "!asm-policy-stats"
+      - "!asm-policies"
+      - "!asm-server-technologies"
+      - "!asm-signature-sets"
       - "!client-ssl-profiles"
       - "!devices"
       - "!device-groups"
@@ -84,6 +105,21 @@ options:
       - "!fasthttp-profiles"
       - "!fastl4-profiles"
       - "!gateway-icmp-monitors"
+      - "!gtm-pools"
+      - "!gtm-servers"
+      - "!gtm-wide-ips"
+      - "!gtm-a-pools"
+      - "!gtm-a-wide-ips"
+      - "!gtm-aaaa-pools"
+      - "!gtm-aaaa-wide-ips"
+      - "!gtm-cname-pools"
+      - "!gtm-cname-wide-ips"
+      - "!gtm-mx-pools"
+      - "!gtm-mx-wide-ips"
+      - "!gtm-naptr-pools"
+      - "!gtm-naptr-wide-ips"
+      - "!gtm-srv-pools"
+      - "!gtm-srv-wide-ips"
       - "!http-monitors"
       - "!https-monitors"
       - "!http-profiles"
@@ -121,13 +157,14 @@ options:
 extends_documentation_fragment: f5
 author:
   - Tim Rupp (@caphrim007)
+  - Wojciech Wypior (@wojtek0806)
 '''
 
 EXAMPLES = r'''
 - name: Collect BIG-IP facts
   bigip_device_facts:
     gather_subset:
-      - interface
+      - interfaces
       - vlans
     provider:
       server: lb.mydomain.com
@@ -194,6 +231,336 @@ asm_policy_stats:
       type: int
       sample: 3
   sample: hash/dictionary of values
+asm_policies:
+  description: Detailed facts for ASM policies present on device.
+  returned: When C(asm-policies) is specified in C(gather_subset).
+  type: complex
+  contains:
+    full_path:
+      description:
+        - Full name of the resource as known to BIG-IP.
+      returned: changed
+      type: str
+      sample: /Common/foo_policy
+    name:
+      description:
+        - Relative name of the resource in BIG-IP.
+      returned: changed
+      type: str
+      sample: foo_policy
+    policy_id:
+      description:
+        - Generated ID of the ASM policy resource.
+      returned: changed
+      type: str
+      sample: l0Ckxe-7yHsXp8U5tTgbFQ
+    active:
+      description:
+        - Indicates if an ASM policy is active.
+      returned: changed
+      type: bool
+      sample: yes
+    protocol_independent:
+      description:
+        - Indicates if the ASM policy differentiates between HTTP/WS and HTTPS/WSS URLs.
+      returned: changed
+      type: bool
+      sample: no
+    has_parent:
+      description:
+        - Indicates if the ASM policy is a child of another ASM policy.
+      returned: changed
+      type: bool
+      sample: no
+    type:
+      description:
+        - The type of policy, can be C(Security) or C(Parent).
+      returned: changed
+      type: str
+      sample: security
+    virtual_servers:
+      description:
+        - Virtual server or servers which have this policy assigned to them.
+      returned: changed
+      type: list
+      sample: ['/Common/foo_VS/']
+    allowed_response_codes:
+      description:
+        - Lists the response status codes between 400 and 599 that the security profile considers legal.
+      returned: changed
+      type: list
+      sample: ['400', '404']
+    description:
+      description:
+        - Description of the resource.
+      returned: changed
+      type: str
+      sample: Significant Policy Description
+    learning_mode:
+      description:
+        - Determine how the policy is built.
+      returned: changed
+      type: str
+      sample: manual
+    enforcement_mode:
+      description:
+        - Specifies whether blocking is active or inactive for the ASM policy.
+      returned: changed
+      type: str
+      sample: blocking
+    trust_xff:
+      description:
+        - Indicates the system has confidence in an XFF (X-Forwarded-For) header in the request.
+      returned: changed
+      type: bool
+      sample: yes
+    custom_xff_headers:
+      description:
+        - List of custom XFF headers trusted by the system.
+      returned: changed
+      type: str
+      sample: asm-proxy1
+    case_insensitive:
+      description:
+        - Indicates if the ASM policy treats file types, URLs, and parameters as case sensitive.
+      returned: changed
+      type: bool
+      sample: yes
+    signature_staging:
+      description:
+        - Specifies if the staging feature is active on the ASM policy.
+      returned: changed
+      type: bool
+      sample: yes
+    place_signatures_in_staging:
+      description:
+        - Specifies if the system places new or updated signatures in staging
+          for the number of days specified in the enforcement readiness period.
+      returned: changed
+      type: bool
+      sample: no
+    enforcement_readiness_period:
+      description:
+        - Period in days both security policy entities and attack signatures
+          remain in staging mode before the system suggests to enforce them.
+      returned: changed
+      type: int
+      sample: 8
+    path_parameter_handling:
+      description:
+        - Specifies how the system handles path parameters that are attached to path segments in URIs.
+      returned: changed
+      type: str
+      sample: ignore
+    trigger_asm_irule_event:
+      description:
+        - Indicates if iRule event is enabled.
+      returned: changed
+      type: str
+      sample: disabled
+    inspect_http_uploads:
+      description:
+        - Specify if the system should inspect all http uploads.
+      returned: changed
+      type: bool
+      sample: yes
+    mask_credit_card_numbers_in_request:
+      description:
+        - Indicates if the system masks credit card numbers.
+      returned: changed
+      type: bool
+      sample: no
+    maximum_http_header_length:
+      description:
+        - Maximum length of an HTTP header name and value that the system processes.
+      returned: changed
+      type: int
+      sample: 8192
+    use_dynamic_session_id_in_url:
+      description:
+        - Specifies how the security policy processes URLs that use dynamic sessions.
+      returned: changed
+      type: bool
+      sample: no
+    maximum_cookie_header_length:
+      description:
+        - Maximum length of a cookie header name and value that the system processes.
+      returned: changed
+      type: int
+      sample: 8192
+    application_language:
+      description:
+        - The language encoding for the web application.
+      returned: changed
+      type: str
+      sample: utf-8
+    disallowed_geolocations:
+      description:
+        - Displays countries that may not access the web application.
+      returned: changed
+      type: str
+      sample: Argentina
+    csrf_protection_enabled:
+      description:
+        - Specifies if CSRF protection is active on the ASM policy.
+      returned: changed
+      type: bool
+      sample: yes
+    csrf_protection_ssl_only:
+      description:
+        - Specifies that only HTTPS URLs will be checked for CSRF protection.
+      returned: changed
+      type: bool
+      sample: yes
+    csrf_protection_expiration_time_in_seconds:
+      description:
+        - Specifies how long, in seconds, a configured CSRF token is valid before it expires.
+      returned: changed
+      type: int
+      sample: 600
+    csrf_urls:
+      description:
+        - Specifies a list of URLs for CSRF token verification.
+        - In version 13.0.0 and above this has become a sub-collection and a list of dictionaries.
+        - In version 12.x this is a list of simple strings.
+      returned: changed
+      type: complex
+      contains:
+        csrf_url_required_parameters:
+          description:
+            - Indicates whether to ignore or require one of the specified parameters is present
+              in a request when checking if the URL entry matches the request.
+          returned: changed
+          type: str
+          sample: ignore
+        csrf_url_parameters_list:
+          description:
+            - List of parameters to look for in a request when checking if the URL entry matches the request.
+          returned: changed
+          type: list
+          sample: ['fooparam']
+        csrf_url:
+          description:
+            - Specifies an URL to protect.
+          returned: changed
+          type: str
+          sample: ['/foo.html']
+        csrf_url_method:
+          description:
+            - Method for the specified URL.
+          returned: changed
+          type: str
+          sample: POST
+        csrf_url_enforcement_action:
+          description:
+            - Indicates the action specified for the system to take when the URL entry matches.
+          returned: changed
+          type: str
+          sample: none
+        csrf_url_id:
+          description:
+            - Specified the generated ID for the configured CSRF url resource.
+          returned: changed
+          type: str
+          sample: l0Ckxe-7yHsXp8U5tTgbFQ
+        csrf_url_wildcard_order:
+          description:
+            - Specified the order in which the wildcard URLs are enforced.
+          returned: changed
+          type: str
+          sample: 1
+  sample: hash/dictionary of values
+asm_server_technologies:
+  description: Detailed facts for ASM server technologies present on device.
+  returned: When C(asm-server-technologies) is specified in C(gather_subset).
+  type: complex
+  contains:
+    id:
+      description:
+        - Displays the generated ID for the server technology resource.
+      returned: changed
+      type: str
+      sample: l0Ckxe-7yHsXp8U5tTgbFQ
+    server_technology_name:
+      description:
+        - Human friendly name of the server technology resource.
+      returned: changed
+      type: str
+      sample: Wordpress
+    server_technology_references:
+      description:
+        - List of dictionaries containing API self links of the associated technology resources.
+      returned: changed
+      type: complex
+      contains:
+        link:
+          description:
+            - A self link to an associated server technology.
+      sample: https://localhost/mgmt/tm/asm/server-technologies/NQG7CT02OBC2cQWbnP7T-A?ver=13.1.0
+  sample: hash/dictionary of values
+asm_signature_sets:
+  description: Detailed facts for ASM signature sets present on device.
+  returned: When C(asm-signature-sets) is specified in C(gather_subset).
+  type: complex
+  contains:
+    name:
+      description:
+        - Name of the signature set
+      returned: changed
+      type: str
+      sample: WebSphere signatures
+    id:
+      description:
+        - Displays the generated ID for the signature set resource.
+      returned: changed
+      type: str
+      sample: l0Ckxe-7yHsXp8U5tTgbFQ
+    type:
+      description:
+        - The method used to select signatures to be a part of the signature set.
+      returned: changed
+      type: str
+      sample: filter-based
+    category:
+      description:
+        - Displays the category of the signature set.
+      returned: changed
+      type: str
+      sample: filter-based
+    is_user_defined:
+      description:
+        - Specifies that this signature set was added by a user.
+      returned: changed
+      type: bool
+      sample: no
+    assign_to_policy_by_default:
+      description:
+        - Indicates whether the system assigns this signature set to a new created security policy by default.
+      returned: changed
+      type: bool
+      sample: yes
+    default_alarm:
+      description:
+        - Displays whether the security policy logs the request data in the Statistics
+          screen if a request matches a signature that is included in the signature set
+      returned: changed
+      type: bool
+      sample: yes
+    default_block:
+      description:
+        - Displays, when the security policy's enforcement mode is Blocking,
+          how the system treats requests that match a signature included in the signature set.
+      returned: changed
+      type: bool
+      sample: yes
+    default_learn:
+      description:
+        - Displays whether the security policy learns all requests that match a signature
+          that is included in the signature set.
+      returned: changed
+      type: bool
+      sample: yes
+  sample: hash/dictionary of values
 client_ssl_profiles:
   description: Client SSL Profile related facts.
   returned: When C(client-ssl-profiles) is specified in C(gather_subset).
@@ -203,13 +570,13 @@ client_ssl_profiles:
       description:
         - Full name of the resource as known to BIG-IP.
       returned: changed
-      type: string
+      type: str
       sample: /Common/bigip02.internal
     name:
       description:
         - Relative name of the resource in BIG-IP.
       returned: changed
-      type: string
+      type: str
       sample: bigip02.internal
     alert_timeout:
       description:
@@ -234,13 +601,13 @@ client_ssl_profiles:
       description:
         - Specifies how often the system authenticates a user.
       returned: changed
-      type: string
+      type: str
       sample: once
     ca_file:
       description:
         - Specifies the certificate authority (CA) file name.
       returned: changed
-      type: string
+      type: str
       sample: /Common/default-ca.crt
     cache_size:
       description:
@@ -260,38 +627,38 @@ client_ssl_profiles:
           management system for the purpose of terminating or initiating
           an SSL connection.
       returned: changed
-      type: string
+      type: str
       sample: /Common/default.crt
     chain_file:
       description:
         - Specifies or builds a certificate chain file that a client can
           use to authenticate the profile.
       returned: changed
-      type: string
+      type: str
       sample: /Common/ca-chain.crt
     ciphers:
       description:
         - Specifies a list of cipher names.
       returned: changed
-      type: string
+      type: str
       sample: ['DEFAULT']
     crl_file:
       description:
         - Specifies the certificate revocation list file name.
       returned: changed
-      type: string
+      type: str
       sample: /Common/default.crl
     parent:
       description:
         - Parent of the profile
       returned: changed
-      type: string
+      type: str
       sample: /Common/clientssl
     description:
       description:
         - Description of the profile.
       returned: changed
-      type: string
+      type: str
       sample: My profile
     modssl_methods:
       description:
@@ -303,7 +670,7 @@ client_ssl_profiles:
       description:
         - Specifies the peer certificate mode.
       returned: changed
-      type: string
+      type: str
       sample: ignore
     sni_require:
       description:
@@ -362,7 +729,7 @@ client_ssl_profiles:
           indication) extension information in ClientHello from a client
           connection.
       returned: changed
-      type: string
+      type: str
       sample: bigip01
     session_ticket:
       description:
@@ -388,7 +755,7 @@ client_ssl_profiles:
       description:
         - Specifies the secure renegotiation mode.
       returned: changed
-      type: string
+      type: str
       sample: require
     handshake_timeout:
       description:
@@ -429,21 +796,21 @@ client_ssl_profiles:
           certification authority key when SSL forward proxy feature is
           enabled.
       returned: changed
-      type: string
+      type: str
     forward_proxy_ca_certificate_file:
       description:
         - Specifies the name of the certificate file that is used as the
           certification authority certificate when SSL forward proxy feature
           is enabled.
       returned: changed
-      type: string
+      type: str
     forward_proxy_ca_key_file:
       description:
         - Specifies the name of the key file that is used as the
           certification authority key when SSL forward proxy feature is
           enabled.
       returned: changed
-      type: string
+      type: str
   sample: hash/dictionary of values
 devices:
   description: Device related facts.
@@ -454,13 +821,13 @@ devices:
       description:
         - Full name of the resource as known to BIG-IP.
       returned: changed
-      type: string
+      type: str
       sample: /Common/bigip02.internal
     name:
       description:
         - Relative name of the resource in BIG-IP.
       returned: changed
-      type: string
+      type: str
       sample: bigip02.internal
     active_modules:
       description:
@@ -472,91 +839,91 @@ devices:
       description:
         - Media Access Control address (MAC address) of the device.
       returned: changed
-      type: string
+      type: str
       sample: "fa:16:3e:c3:42:6f"
     build:
       description:
         - The minor version information of the total product version.
       returned: changed
-      type: string
+      type: str
       sample: 0.0.1
     chassis_id:
       description:
         - Serial number of the device.
       returned: changed
-      type: string
+      type: str
       sample: 11111111-2222-3333-444444444444
     chassis_type:
       description:
         - Displays the chassis type. The possible values are C(individual) and C(viprion).
       returned: changed
-      type: string
+      type: str
       sample: individual
     comment:
       description:
         - User comments about the device.
       returned: changed
-      type: string
+      type: str
       sample: My device
     configsync_address:
       description:
         - IP address used for configuration synchronization.
       returned: changed
-      type: string
+      type: str
       sample: 10.10.10.10
     contact:
       description:
         - Administrator contact information.
       returned: changed
-      type: string
+      type: str
       sample: The User
     description:
       description:
         - Description of the device.
       returned: changed
-      type: string
+      type: str
       sample: My device
     edition:
       description:
         - Displays the software edition.
       returned: changed
-      type: string
+      type: str
       sample: Point Release 7
     failover_state:
       description:
         - Device failover state.
       returned: changed
-      type: string
+      type: str
       sample: active
     hostname:
       description:
         - Device hostname
       returned: changed
-      type: string
+      type: str
       sample: bigip02.internal
     location:
       description:
         - Specifies the physical location of the device.
       returned: changed
-      type: string
+      type: str
       sample: London
     management_address:
       description:
         - IP address of the management interface.
       returned: changed
-      type: string
+      type: str
       sample: 3.3.3.3
     marketing_name:
       description:
         - Marketing name of the device platform.
       returned: changed
-      type: string
+      type: str
       sample: BIG-IP Virtual Edition
     multicast_address:
       description:
         - Specifies the multicast IP address used for failover.
       returned: changed
-      type: string
+      type: str
       sample: 4.4.4.4
     optional_modules:
       description:
@@ -568,25 +935,25 @@ devices:
       description:
         - Displays the device platform identifier.
       returned: changed
-      type: string
+      type: str
       sample: Z100
     primary_mirror_address:
       description:
         - Specifies the IP address used for state mirroring.
       returned: changed
-      type: string
+      type: str
       sample: 5.5.5.5
     product:
       description:
         - Displays the software product name.
       returned: changed
-      type: string
+      type: str
       sample: BIG-IP
     secondary_mirror_address:
       description:
         - Secondary IP address used for state mirroring.
       returned: changed
-      type: string
+      type: str
       sample: 2.2.2.2
     self:
       description:
@@ -598,7 +965,7 @@ devices:
       description:
         - Displays the software version number.
       returned: changed
-      type: string
+      type: str
       sample: 13.1.0.7
     timelimited_modules:
       description:
@@ -610,7 +977,7 @@ devices:
       description:
         - Displays the time zone configured on the device.
       returned: changed
-      type: string
+      type: str
       sample: UTC
     unicast_addresses:
       description:
@@ -622,7 +989,7 @@ devices:
           description:
             - The IP address that peers can use to reach this unicast address IP.
           returned: changed
-          type: string
+          type: str
           sample: 5.4.3.5
         effective_port:
           description:
@@ -634,7 +1001,7 @@ devices:
           description:
             - The IP address that the failover daemon will listen on for packets from its peers.
           returned: changed
-          type: string
+          type: str
           sample: 5.4.3.5
         port:
           description:
@@ -652,13 +1019,13 @@ device_groups:
       description:
         - Full name of the resource as known to BIG-IP.
       returned: changed
-      type: string
+      type: str
       sample: /Common/fasthttp
     name:
       description:
         - Relative name of the resource in BIG-IP.
       returned: changed
-      type: string
+      type: str
       sample: fasthttp
     autosync_enabled:
       description:
@@ -670,7 +1037,7 @@ device_groups:
       description:
         - Description of the device group.
       returned: changed
-      type: string
+      type: str
       sample: My device group
     devices:
       description:
@@ -701,7 +1068,7 @@ device_groups:
       description:
         - Specifies the type of device group.
       returned: changed
-      type: string
+      type: str
       sample: sync-only
     asm_sync_enabled:
       description:
@@ -719,41 +1086,41 @@ external_monitors:
       description:
         - Full name of the resource as known to BIG-IP.
       returned: changed
-      type: string
+      type: str
       sample: /Common/external
     name:
       description:
         - Relative name of the resource in BIG-IP.
       returned: changed
-      type: string
+      type: str
       sample: external
     parent:
       description:
         - Profile from which this profile inherits settings.
       returned: changed
-      type: string
+      type: str
       sample: external
     description:
       description:
         - Description of the resource.
       returned: changed
-      type: string
+      type: str
       sample: My monitor
     destination:
       description:
         - Specifies the IP address and service port of the resource that is
           the destination of this monitor.
-      type: string
+      type: str
       sample: "*:*"
     args:
       description:
         - Specifies any command-line arguments that the script requires.
-      type: string
+      type: str
       sample: arg1 arg2 arg3
     external_program:
       description:
         - Specifies the name of the file for the monitor to use.
-      type: string
+      type: str
       sample: /Common/arg_example
     variables:
       description:
@@ -801,13 +1168,13 @@ fasthttp_profiles:
       description:
         - Full name of the resource as known to BIG-IP.
       returned: changed
-      type: string
+      type: str
       sample: /Common/fasthttp
     name:
       description:
         - Relative name of the resource in BIG-IP.
       returned: changed
-      type: string
+      type: str
       sample: fasthttp
     client_close_timeout:
       description:
@@ -860,13 +1227,13 @@ fasthttp_profiles:
       description:
         - Profile from which this profile inherits settings.
       returned: changed
-      type: string
+      type: str
       sample: fasthttp
     description:
       description:
         - Description of the resource.
       returned: changed
-      type: string
+      type: str
       sample: My profile
     force_http_1_0_response:
       description:
@@ -880,7 +1247,7 @@ fasthttp_profiles:
         - A string that the system inserts as a header in an HTTP request. If the header
           exists already, the system does not replace it.
       returned: changed
-      type: string
+      type: str
       sample: "X-F5-Authentication: foo"
     http_1_1_close_workarounds:
       description:
@@ -961,7 +1328,7 @@ fasthttp_profiles:
         - How the system handles closing connections. Values provided may be C(enabled), C(disabled),
           or C(fast).
       returned: changed
-      type: string
+      type: str
       sample: enabled
   sample: hash/dictionary of values
 fastl4_profiles:
@@ -973,13 +1340,13 @@ fastl4_profiles:
       description:
         - Full name of the resource as known to BIG-IP.
       returned: changed
-      type: string
+      type: str
       sample: /Common/fastl4
     name:
       description:
         - Relative name of the resource in BIG-IP.
       returned: changed
-      type: string
+      type: str
       sample: fastl4
     client_timeout:
       description:
@@ -996,13 +1363,13 @@ fastl4_profiles:
       description:
         - Profile from which this profile inherits settings.
       returned: changed
-      type: string
+      type: str
       sample: fastl4
     description:
       description:
         - Description of the resource.
       returned: changed
-      type: string
+      type: str
       sample: My profile
     explicit_flow_migration:
       description:
@@ -1039,7 +1406,7 @@ fastl4_profiles:
         - When C(set), sets the outgoing packet's IP Header DF bit.
         - When C(clear), clears the outgoing packet's IP Header DF bit.
       returned: changed
-      type: string
+      type: str
       sample: pmtu
     ip_tos_to_client:
       description:
@@ -1047,7 +1414,7 @@ fastl4_profiles:
         - This option specifies the ToS level that the traffic management
           system assigns to IP packets when sending them to clients.
       returned: changed
-      type: string or int
+      type: str or int
       sample: 200
     ip_tos_to_server:
       description:
@@ -1055,7 +1422,7 @@ fastl4_profiles:
         - This option specifies the ToS level that the traffic management system assigns
           to IP packets when sending them to servers.
       returned: changed
-      type: string or int
+      type: str or int
       sample: pass-through
     ttl_mode:
       description:
@@ -1069,7 +1436,7 @@ fastl4_profiles:
         - When C(set), sets the outgoing IP Header TTL value to a specific value(as
           specified by C(ttl_v4) or C(ttl_v6).
       returned: changed
-      type: string
+      type: str
       sample: preserve
     ttl_v4:
       description:
@@ -1163,7 +1530,7 @@ fastl4_profiles:
       description:
         - Specifies the Packet Velocity(r) ASIC acceleration policy.
       returned: changed
-      type: string
+      type: str
       sample: full
     pva_dynamic_client_packets:
       description:
@@ -1207,7 +1574,7 @@ fastl4_profiles:
         - When C(establish), implies TCP 3WAY handshaking or UDP CS round trip are
           confirmed.
       returned: changed
-      type: string
+      type: str
       sample: embryonic
     reassemble_fragments:
       description:
@@ -1321,13 +1688,13 @@ fastl4_profiles:
       description:
         - Specifies how you want to handle the TCP timestamp.
       returned: changed
-      type: string
+      type: str
       sample: preserve
     tcp_window_scale_mode:
       description:
         - Specifies how you want to handle the TCP window scale.
       returned: changed
-      type: string
+      type: str
       sample: preserve
     timeout_recovery:
       description:
@@ -1338,7 +1705,7 @@ fastl4_profiles:
         - When C(fallback), the normal FastL4 load-balancing methods are acceptable
           to pick a server.
       returned: changed
-      type: string
+      type: str
       sample: fallback
   sample: hash/dictionary of values
 gateway_icmp_monitors:
@@ -1350,25 +1717,25 @@ gateway_icmp_monitors:
       description:
         - Full name of the resource as known to BIG-IP.
       returned: changed
-      type: string
+      type: str
       sample: /Common/gateway_icmp
     name:
       description:
         - Relative name of the resource in BIG-IP.
       returned: changed
-      type: string
+      type: str
       sample: gateway_icmp
     parent:
       description:
         - Profile from which this profile inherits settings.
       returned: changed
-      type: string
+      type: str
       sample: gateway_icmp
     description:
       description:
         - Description of the resource.
       returned: changed
-      type: string
+      type: str
       sample: My monitor
     adaptive:
       description:
@@ -1379,7 +1746,7 @@ gateway_icmp_monitors:
       description:
         - Specifies whether the adaptive-divergence-value is C(relative) or
           C(absolute).
-      type: string
+      type: str
       sample: relative
     adaptive_divergence_value:
       description:
@@ -1403,7 +1770,7 @@ gateway_icmp_monitors:
       description:
         - Specifies the IP address and service port of the resource that is
           the destination of this monitor.
-      type: string
+      type: str
       sample: "*:*"
     interval:
       description:
@@ -1442,6 +1809,331 @@ gateway_icmp_monitors:
       type: int
       sample: 0
   sample: hash/dictionary of values
+gtm_pools:
+  description:
+    - GTM pool related facts.
+    - Every "type" of pool has the exact same list of possible facts. Therefore,
+      the list of facts here is presented once instead of 6 times.
+  returned: When any of C(gtm-pools) or C(gtm-*-pools) is specified in C(gather_subset).
+  type: complex
+  contains:
+    full_path:
+      description:
+        - Full name of the resource as known to BIG-IP.
+      returned: changed
+      type: str
+      sample: /Common/pool1
+    name:
+      description:
+        - Relative name of the resource in BIG-IP.
+      returned: changed
+      type: str
+      sample: pool1
+    alternate_mode:
+      description:
+        - The load balancing mode that the system uses to load balance name resolution
+          requests among the members of the pool.
+      type: str
+      sample: drop-packet
+    dynamic_ratio:
+      description:
+        - Whether or not the dynamic ratio load balancing algorithm is enabled for this
+          pool.
+      type: bool
+      sample: yes
+    enabled:
+      description:
+        - Is the pool enabled.
+      type: bool
+    disabled:
+      description:
+        - Is the pool disabled
+      type: bool
+    fallback_mode:
+      description:
+        - Specifies the load balancing mode that the system uses to load balance
+          name resolution amongst the pool members if the preferred and alternate
+          modes are unsuccessful in picking a pool.
+      type: str
+    load_balancing_mode:
+      description:
+        - Specifies the preferred load balancing mode that the system uses to load
+          balance requests across pool members.
+      type: str
+    manual_resume:
+      description:
+        - Whether manual resume is enabled for this pool
+      type: bool
+    max_answers_returned:
+      description:
+        - Maximum number of available virtual servers that the system lists in a
+          response.
+      type: int
+    members:
+      description:
+        - Lists of members (and their configurations) in the pool.
+      type: complex
+    partition:
+      description:
+        - Partition the pool exists on.
+    qos_hit_ratio:
+      description:
+        - Weight of the Hit Ratio performance factor for the QoS dynamic load
+          balancing method
+      type: int
+    qos_hops:
+      description:
+        - Weight of the Hops performance factor when load balancing mode or fallback mode
+          is QoS.
+      type: int
+    qos_kilobytes_second:
+      description:
+        - Weight assigned to Kilobytes per Second performance factor when load balancing
+          option is QoS.
+      type: int
+    qos_lcs:
+      description:
+        - Weight assign to the Link Capacity performance factor when load balacing option
+          is QoS.
+      type: int
+    qos_packet_rate:
+      description:
+        - Weight assign to the Packet Rate performance factor when load balacing option
+          is QoS.
+      type: int
+    qos_rtt:
+      description:
+        - Weight assign to the Round Trip Time performance factor when load balacing option
+          is QoS.
+      type: int
+    qos_topology:
+      description:
+        - Weight assign to the Topology performance factor when load balacing option
+          is QoS.
+      type: int
+    qos_vs_capacity:
+      description:
+        - Weight assign to the Virtual Server performance factor when load balacing option
+          is QoS.
+      type: int
+    qos_vs_score:
+      description:
+        - Weight assign to the Virtual Server Score performance factor when load balacing
+          option is QoS.
+      type: int
+    ttl:
+      description:
+        - Number of seconds that the IP address, once found, is valid.
+      type: int
+    verify_member_availability:
+      description:
+        - Whether or not the system verifies the availability of the members before
+          sending a connection to them.
+      type: bool
+  sample: hash/dictionary of values
+gtm_servers:
+  description:
+    - GTM server related facts.
+  returned: When C(gtm-servers) is specified in C(gather_subset).
+  type: complex
+  contains:
+    full_path:
+      description:
+        - Full name of the resource as known to BIG-IP.
+      returned: changed
+      type: str
+      sample: /Common/server1
+    name:
+      description:
+        - Relative name of the resource in BIG-IP.
+      returned: changed
+      type: str
+      sample: server1
+    datacenter:
+      description:
+        - Full name of the datacenter this server belongs to.
+      type: str
+    enabled:
+      description:
+        - Whether the server is enabled.
+      type: bool
+    disabled:
+      description:
+        - Whether the server is disabled.
+      type: bool
+    expose_route_domains:
+      description:
+        - Allow the GTM server to auto-discover the LTM virtual servers from all
+          route domains.
+      type: bool
+    iq_allow_path:
+      description:
+        - Whether the GTM uses this BIG-IP system to conduct a path probe before
+          delegating traffic to it.
+      type: bool
+    iq_allow_service_check:
+      description:
+        - Whether the GTM uses this BIG-IP system to conduct a service check probe
+          before delegating traffic to it.
+      type: bool
+    iq_allow_snmp:
+      description:
+        - Whether the GTM uses this BIG-IP system to conduct an SNMP probe
+          before delegating traffic to it.
+      type: bool
+    limit_cpu_usage:
+      description:
+        - For a server configured as a generic host, specifies the percent of CPU
+          usage, otherwise has no effect.
+    limit_cpu_usage_status:
+      description:
+        - Whether C(limit_cpu_usage) is enabled for this server.
+      type: bool
+    limit_max_bps:
+      description:
+        - Maximum allowable data throughput rate in bits per second for this server.
+    limit_max_bps_status:
+      description:
+        - Whether C(limit_max_bps) is enabled for this server.
+      type: bool
+    limit_max_connections:
+      description:
+        - Maximum number of concurrent connections, combind, for this server.
+    limit_max_connections_status:
+      description:
+        - Whether C(limit_max_connections) is enabled for this server.
+      type: bool
+    limit_max_pps:
+      description:
+        - Maximum allowable data transfer rate, in packets per second, for this server.
+    limit_max_pps_status:
+      description:
+        - Whether C(limit_max_pps) is enabled for this server.
+      type: bool
+    limit_mem_available:
+      description:
+        - For a server configured as a generic host, specifies the available memory
+          required by the virtual servers on the server.
+        - If available memory falls below this limit, the system marks the server as
+          unavailable.
+    limit_mem_available_status:
+      description:
+        - Whether C(limit_mem_available) is enabled for this server.
+      type: bool
+    link_discovery:
+      description:
+        - Specifies whether the system auto-discovers the links for this server.
+      type: str
+    monitors:
+      description:
+        - Specifies health monitors that the system uses to determine whether this
+          server is available for load balancing.
+      returned: changed
+      type: list
+      sample: ['/Common/https_443', '/Common/icmp']
+    monitor_type:
+      description:
+        - Whether one or monitors need to pass, or all monitors need to pass.
+      returned: changed
+      type: str
+      sample: and_list
+    product:
+      description:
+        - Specifies the server type.
+    prober_fallback:
+      description:
+        - The type of prober to use to monitor this servers resources when the
+          preferred type is not available.
+    prober_preference:
+      description:
+        - Specifies the type of prober to use to monitor this servers resources.
+    virtual_server_discovery:
+      description:
+        - Whether the system auto-discovers the virtual servers for this server.
+      type: str
+    addresses:
+      description:
+        - Specifies the server IP addresses for the server.
+      type: complex
+    devices:
+      description:
+        - Specifies the names of the devies that represent this server.
+      type: complex.
+    virtual_servers:
+      description:
+        - Virtual servers that are resources for this server.
+      type: complex
+  sample: hash/dictionary of values
+gtm_wide_ips:
+  description:
+    - GTM Wide IP related facts.
+    - Every "type" of wide-ip has the exact same list of possible facts. Therefore,
+      the list of facts here is presented once instead of 6 times.
+  returned: When any of C(gtm-wide-ips) or C(gtm-*-wide-ips) is specified in C(gather_subset).
+  type: complex
+  contains:
+    full_path:
+      description:
+        - Full name of the resource as known to BIG-IP.
+      returned: changed
+      type: str
+      sample: /Common/wide1
+    name:
+      description:
+        - Relative name of the resource in BIG-IP.
+      returned: changed
+      type: str
+      sample: wide1
+    description:
+      description:
+        - Description of the wide ip.
+    enabled:
+      description:
+        - Whether the Wide IP is enabled.
+      type: bool
+    disabled:
+      description:
+        - Whether the Wide IP is disabled.
+      type: bool
+    failure_rcode:
+      description:
+        - Specifies the DNS RCODE used when C(failure_rcode_response) is C(yes).
+    failure_rcode_response:
+      description:
+        - When C(yes), specifies that the system returns a RCODE response to
+          Wide IP requests after exhausting all load-balancing methods.
+      type: bool
+    failure_rcode_ttl:
+      description:
+        - Specifies the negative caching TTL of the SOA for the RCODE response.
+    last_resort_pool:
+      description:
+        - Specifies which pool, as listed in Pool List, for the system to use as
+          the last resort pool for the wide IP.
+    minimal_response:
+      description:
+        - Specifies that the system forms the smallest allowable DNS response to
+          a query.
+    persist_cidr_ipv4:
+      description:
+        - Specifies the number of bits the system uses to identify IPv4 addresses
+          when persistence is enabled.
+    persist_cidr_ipv6:
+      description:
+        - Specifies the number of bits the system uses to identify IPv6 addresses
+          when persistence is enabled.
+    pool_lb_mode:
+      description:
+        - Specifies the load balancing method used to select a pool in this wide IP.
+    ttl_persistence:
+      description:
+        - Specifies, in seconds, the length of time for which the persistence
+          entry is valid.
+    pools:
+      description:
+        - Specifies the pools that this wide IP uses for load balancing.
+      type: complex
+  sample: hash/dictionary of values
 http_monitors:
   description: HTTP monitor related facts.
   returned: When C(http-monitors) is specified in C(gather_subset).
@@ -1451,25 +2143,25 @@ http_monitors:
       description:
         - Full name of the resource as known to BIG-IP.
       returned: changed
-      type: string
+      type: str
       sample: /Common/http
     name:
       description:
         - Relative name of the resource in BIG-IP.
       returned: changed
-      type: string
+      type: str
       sample: http
     parent:
       description:
         - Profile from which this profile inherits settings.
       returned: changed
-      type: string
+      type: str
       sample: http
     description:
       description:
         - Description of the resource.
       returned: changed
-      type: string
+      type: str
       sample: My monitor
     adaptive:
       description:
@@ -1480,7 +2172,7 @@ http_monitors:
       description:
         - Specifies whether the adaptive-divergence-value is C(relative) or
           C(absolute).
-      type: string
+      type: str
       sample: relative
     adaptive_divergence_value:
       description:
@@ -1504,7 +2196,7 @@ http_monitors:
       description:
         - Specifies the IP address and service port of the resource that is
           the destination of this monitor.
-      type: string
+      type: str
       sample: "*:*"
     interval:
       description:
@@ -1528,14 +2220,14 @@ http_monitors:
       description:
         - Specifies the text string that the monitor looks for in the
           returned resource.
-      type: string
+      type: str
       sample: check string
     receive_disable_string:
       description:
         - Specifies a text string that the monitor looks for in the returned
           resource. If the text string is matched in the returned resource,
           the corresponding node or pool member is marked session disabled.
-      type: string
+      type: str
       sample: check disable string
     reverse:
       description:
@@ -1548,7 +2240,7 @@ http_monitors:
       description:
         - Specifies the text string that the monitor sends to the target
           object.
-      type: string
+      type: str
       sample: "GET /\\r\\n"
     time_until_up:
       description:
@@ -1577,7 +2269,7 @@ http_monitors:
       description:
         - Specifies the username, if the monitored target requires
           authentication.
-      type: string
+      type: str
       sample: user1
   sample: hash/dictionary of values
 https_monitors:
@@ -1589,25 +2281,25 @@ https_monitors:
       description:
         - Full name of the resource as known to BIG-IP.
       returned: changed
-      type: string
+      type: str
       sample: /Common/http
     name:
       description:
         - Relative name of the resource in BIG-IP.
       returned: changed
-      type: string
+      type: str
       sample: http
     parent:
       description:
         - Profile from which this profile inherits settings.
       returned: changed
-      type: string
+      type: str
       sample: http
     description:
       description:
         - Description of the resource.
       returned: changed
-      type: string
+      type: str
       sample: My monitor
     adaptive:
       description:
@@ -1618,7 +2310,7 @@ https_monitors:
       description:
         - Specifies whether the adaptive-divergence-value is C(relative) or
           C(absolute).
-      type: string
+      type: str
       sample: relative
     adaptive_divergence_value:
       description:
@@ -1642,7 +2334,7 @@ https_monitors:
       description:
         - Specifies the IP address and service port of the resource that is
           the destination of this monitor.
-      type: string
+      type: str
       sample: "*:*"
     interval:
       description:
@@ -1666,14 +2358,14 @@ https_monitors:
       description:
         - Specifies the text string that the monitor looks for in the
           returned resource.
-      type: string
+      type: str
       sample: check string
     receive_disable_string:
       description:
         - Specifies a text string that the monitor looks for in the returned
           resource. If the text string is matched in the returned resource,
           the corresponding node or pool member is marked session disabled.
-      type: string
+      type: str
       sample: check disable string
     reverse:
       description:
@@ -1686,12 +2378,12 @@ https_monitors:
       description:
         - Specifies the text string that the monitor sends to the target
           object.
-      type: string
+      type: str
       sample: "GET /\\r\\n"
     ssl_profile:
       description:
         - Specifies the SSL profile to use for the HTTPS monitor.
-      type: string
+      type: str
       sample: /Common/serverssl
     time_until_up:
       description:
@@ -1720,7 +2412,7 @@ https_monitors:
       description:
         - Specifies the username, if the monitored target requires
           authentication.
-      type: string
+      type: str
       sample: user1
   sample: hash/dictionary of values
 http_profiles:
@@ -1732,25 +2424,25 @@ http_profiles:
       description:
         - Full name of the resource as known to BIG-IP.
       returned: changed
-      type: string
+      type: str
       sample: /Common/http
     name:
       description:
         - Relative name of the resource in BIG-IP.
       returned: changed
-      type: string
+      type: str
       sample: http
     parent:
       description:
         - Profile from which this profile inherits settings.
       returned: changed
-      type: string
+      type: str
       sample: http
     description:
       description:
         - Description of the resource.
       returned: changed
-      type: string
+      type: str
       sample: My profile
     accept_xff:
       description:
@@ -1775,7 +2467,7 @@ http_profiles:
           exceeded by the client.
         - When C(reject), rejects the connection.
       returned: changed
-      type: string
+      type: str
       sample: reject
     excess_server_headers:
       description:
@@ -1783,7 +2475,7 @@ http_profiles:
           exceeded by the server.
         - When C(reject), rejects the connection.
       returned: changed
-      type: string
+      type: str
       sample: reject
     known_methods:
       description:
@@ -1820,33 +2512,33 @@ http_profiles:
         - Specifies the pass-through behavior when the C(max_header_size) value
           is exceeded by the client.
       returned: changed
-      type: string
+      type: str
       sample: reject
     oversize_server_headers:
       description:
         - Specifies the pass-through behavior when the C(max_header_size) value
           is exceeded by the server.
       returned: changed
-      type: string
+      type: str
       sample: reject
     pipeline_action:
       description:
         - Enables or disables HTTP/1.1 pipelining.
       returned: changed
-      type: string
+      type: str
       sample: allow
     unknown_method:
       description:
         - Specifies the behavior (allow, reject, or pass through) when an unknown
           HTTP method is parsed.
       returned: changed
-      type: string
+      type: str
       sample: allow
     default_connect_handling:
       description:
         - Specifies the behavior of the proxy service when handling outbound requests.
       returned: changed
-      type: string
+      type: str
       sample: deny
     hsts_include_subdomains:
       description:
@@ -1885,32 +2577,32 @@ http_profiles:
       description:
         - Specifies the proxy mode for this profile. Either reverse, explicit, or transparent.
       returned: changed
-      type: string
+      type: str
       sample: reverse
     redirect_rewrite:
       description:
         - Specifies whether the system rewrites the URIs that are part of HTTP
           redirect (3XX) responses
       returned: changed
-      type: string
+      type: str
       sample: none
     request_chunking:
       description:
         - Specifies how the system handles HTTP content that is chunked by a client.
       returned: changed
-      type: string
+      type: str
       sample: preserve
     response_chunking:
       description:
         - Specifies how the system handles HTTP content that is chunked by a server.
       returned: changed
-      type: string
+      type: str
       sample: selective
     server_agent_name:
       description:
         - Specifies the string used as the server name in traffic generated by LTM.
       returned: changed
-      type: string
+      type: str
       sample: BigIP
     sflow_poll_interval:
       description:
@@ -1929,14 +2621,14 @@ http_profiles:
         - Specifies whether to Remove, Preserve, or Append Via headers included in
           a client request to an origin web server.
       returned: changed
-      type: string
+      type: str
       sample: preserve
     via_response:
       description:
         - Specifies whether to Remove, Preserve, or Append Via headers included in
           an origin web server response to a client.
       returned: changed
-      type: string
+      type: str
       sample: preserve
   sample: hash/dictionary of values
 iapp_services:
@@ -1948,19 +2640,19 @@ iapp_services:
       description:
         - Full name of the resource as known to BIG-IP.
       returned: changed
-      type: string
+      type: str
       sample: /Common/service1
     name:
       description:
         - Relative name of the resource in BIG-IP.
       returned: changed
-      type: string
+      type: str
       sample: service1
     device_group:
       description:
         - The device group the iApp service is part of.
       returned: changed
-      type: string
+      type: str
       sample: /Common/dg1
     inherited_device_group:
       description:
@@ -1991,7 +2683,7 @@ iapp_services:
       description:
         - Traffic group the service is a part of.
       returned: changed
-      type: string
+      type: str
       sample: /Common/tg
     tables:
       description:
@@ -2021,7 +2713,7 @@ iapp_services:
       description:
         - Description of the service
       returned: changed
-      type: string
+      type: str
       sample: My service
   sample: hash/dictionary of values
 icmp_monitors:
@@ -2033,25 +2725,25 @@ icmp_monitors:
       description:
         - Full name of the resource as known to BIG-IP.
       returned: changed
-      type: string
+      type: str
       sample: /Common/icmp
     name:
       description:
         - Relative name of the resource in BIG-IP.
       returned: changed
-      type: string
+      type: str
       sample: icmp
     parent:
       description:
         - Profile from which this profile inherits settings.
       returned: changed
-      type: string
+      type: str
       sample: icmp
     description:
       description:
         - Description of the resource.
       returned: changed
-      type: string
+      type: str
       sample: My monitor
     adaptive:
       description:
@@ -2062,7 +2754,7 @@ icmp_monitors:
       description:
         - Specifies whether the adaptive-divergence-value is C(relative) or
           C(absolute).
-      type: string
+      type: str
       sample: relative
     adaptive_divergence_value:
       description:
@@ -2086,7 +2778,7 @@ icmp_monitors:
       description:
         - Specifies the IP address and service port of the resource that is
           the destination of this monitor.
-      type: string
+      type: str
       sample: "*:*"
     interval:
       description:
@@ -2134,45 +2826,45 @@ interfaces:
       description:
         - Full name of the resource as known to BIG-IP.
       returned: changed
-      type: string
+      type: str
       sample: /Common/irul1
     name:
       description:
         - Relative name of the resource in BIG-IP.
       returned: changed
-      type: string
+      type: str
       sample: irule1
     active_media_type:
       description:
         - Displays the current media setting for the interface.
       returned: changed
-      type: string
+      type: str
       sample: 100TX-FD
     flow_control:
       description:
         - Specifies how the system controls the sending of PAUSE frames for
           flow control.
       returned: changed
-      type: string
+      type: str
       sample: tx-rx
     description:
       description:
         - Description of the interface
       returned: changed
-      type: string
+      type: str
       sample: My interface
     bundle:
       description:
         - The bundle capability on the port.
       returned: changed
-      type: string
+      type: str
       sample: not-supported
     bundle_speed:
       description:
         - The bundle-speed on the port when bundle capability is
           enabled.
       returned: changed
-      type: string
+      type: str
       sample: 100G
     enabled:
       description:
@@ -2191,20 +2883,20 @@ interfaces:
         - Displays the 6-byte ethernet address in non-case-sensitive
           hexadecimal colon notation.
       returned: changed
-      type: string
+      type: str
       sample: "00:0b:09:88:00:9a"
     media_sfp:
       description:
         - The settings for an SFP (pluggable) interface.
       returned: changed
-      type: string
+      type: str
       sample: auto
     lldp_admin:
       description:
         - Sets the sending or receiving of LLDP packets on that interface.
           Should be one of C(disable), C(txonly), C(rxonly) or C(txrx).
       returned: changed
-      type: string
+      type: str
       sample: txonly
     mtu:
       description:
@@ -2219,7 +2911,7 @@ interfaces:
         - Indicates which side of a combo port the interface uses, if both
           sides of the port have the potential for external links.
       returned: changed
-      type: string
+      type: str
       sample: sfp
     sflow_poll_interval:
       description:
@@ -2251,7 +2943,7 @@ interfaces:
       description:
         - Specifies the STP link type for the interface.
       returned: changed
-      type: string
+      type: str
       sample: auto
   sample: hash/dictionary of values
 irules:
@@ -2263,13 +2955,13 @@ irules:
       description:
         - Full name of the resource as known to BIG-IP.
       returned: changed
-      type: string
+      type: str
       sample: /Common/irul1
     name:
       description:
         - Relative name of the resource in BIG-IP.
       returned: changed
-      type: string
+      type: str
       sample: irule1
     ignore_verification:
       description:
@@ -2281,19 +2973,19 @@ irules:
       description:
         - Checksum of the iRule as calculated by BIG-IP.
       returned: changed
-      type: string
+      type: str
       sample: d41d8cd98f00b204e9800998ecf8427e
     definition:
       description:
         - The actual definition of the iRule.
       returned: changed
-      type: string
+      type: str
       sample: when HTTP_REQUEST ...
     signature:
       description:
         - The calculated signature of the iRule.
       returned: changed
-      type: string
+      type: str
       sample: WsYy2M6xMqvosIKIEH/FSsvhtWMe6xKOA6i7f...
   sample: hash/dictionary of values
 ltm_pools:
@@ -2301,6 +2993,60 @@ ltm_pools:
   returned: When C(ltm-pools) is specified in C(gather_subset).
   type: complex
   contains:
+    active_member_count:
+      description:
+        - The number of active pool members in the pool.
+      returned: changed
+      type: int
+      sample: 3
+    all_avg_queue_entry_age:
+      description:
+        - Average queue entry age, for both the pool and its members.
+      returned: changed
+      type: int
+      sample: 5
+    all_max_queue_entry_age_ever:
+      description:
+        - Maximum queue entry age ever, for both the pool and its members.
+      returned: changed
+      type: int
+      sample: 2
+    all_max_queue_entry_age_recently:
+      description:
+        - Maximum queue entry age recently, for both the pool and its members.
+      returned: changed
+      type: int
+      sample: 5
+    all_num_connections_queued_now:
+      description:
+        - Number of connections queued now, for both the pool and its members.
+      returned: changed
+      type: int
+      sample: 20
+    all_num_connections_serviced:
+      description:
+        - Number of connections serviced, for both the pool and its members.
+      returned: changed
+      type: int
+      sample: 15
+    all_queue_head_entry_age:
+      description:
+        - Queue head entry age, for both the pool and its members.
+      returned: changed
+      type: int
+      sample: 4
+    available_member_count:
+      description:
+        - The number of available pool members in the pool.
+      returned: changed
+      type: int
+      sample: 4
+    availability_status:
+      description:
+        - The availability of the pool.
+      returned: changed
+      type: str
+      sample: offline
     allow_nat:
       description:
         - Whether NATs are automatically enabled or disabled for any connections using this pool.
@@ -2319,7 +3065,7 @@ ltm_pools:
           based on the targeted pool.
         - Values can range from C(0) to C(255), or be set to C(pass-through) or C(mimic).
       returned: changed
-      type: string
+      type: str
       sample: pass-through
     client_link_qos:
       description:
@@ -2327,19 +3073,31 @@ ltm_pools:
           based on the targeted pool.
         - Values can range from C(0) to C(7), or be set to C(pass-through).
       returned: changed
-      type: string
+      type: str
       sample: pass-through
+    current_sessions:
+      descriptions:
+        - Current sessions.
+      returned: changed
+      type: int
+      sample: 2
     description:
       description:
         - Description of the pool.
       returned: changed
-      type: string
+      type: str
       sample: my pool
+    enabled_status:
+      description:
+        - The enabled-ness of the pool.
+      returned: changed
+      type: str
+      sample: enabled
     full_path:
       description:
         - Full name of the resource as known to BIG-IP.
       returned: changed
-      type: string
+      type: str
       sample: /Common/pool1
     ignore_persisted_weight:
       description:
@@ -2351,8 +3109,14 @@ ltm_pools:
       description:
         - Load balancing method used by the pool.
       returned: changed
-      type: string
+      type: str
       sample: round-robin
+    member_count:
+      description:
+        - Total number of members in the pool.
+      returned: changed
+      type: int
+      sample: 50
     metadata:
       description:
         - Dictionary of arbitrary key/value pairs set on the pool.
@@ -2377,7 +3141,7 @@ ltm_pools:
         - The action to take if the C(minimum_up_members_checking) is enabled and the number of active pool
           members falls below the number specified in C(minimum_up_members).
       returned: changed
-      type: string
+      type: str
       sample: failover
     minimum_up_members_checking:
       description:
@@ -2389,8 +3153,44 @@ ltm_pools:
       description:
         - Relative name of the resource in BIG-IP.
       returned: changed
-      type: string
+      type: str
       sample: pool1
+    pool_avg_queue_entry_age:
+      description:
+        - Average queue entry age, for the pool only.
+      returned: changed
+      type: int
+      sample: 5
+    pool_max_queue_entry_age_ever:
+      description:
+        - Maximum queue entry age ever, for the pool only.
+      returned: changed
+      type: int
+      sample: 2
+    pool_max_queue_entry_age_recently:
+      description:
+        - Maximum queue entry age recently, for the pool only.
+      returned: changed
+      type: int
+      sample: 5
+    pool_num_connections_queued_now:
+      description:
+        - Number of connections queued now, for the pool only.
+      returned: changed
+      type: int
+      sample: 20
+    pool_num_connections_serviced:
+      description:
+        - Number of connections serviced, for the pool only.
+      returned: changed
+      type: int
+      sample: 15
+    pool_queue_head_entry_age:
+      description:
+        - Queue head entry age, for the pool only.
+      returned: changed
+      type: int
+      sample: 4
     priority_group_activation:
       description:
         - Whether the system load balances traffic according to the priority number assigned to the pool member.
@@ -2416,6 +3216,24 @@ ltm_pools:
       returned: changed
       type: int
       sample: 0
+    real_session:
+      description:
+        - The actual REST API value for the C(session) attribute.
+        - This is different from the C(state) return value, insofar as the return value
+          can be considered a generalization of all available sessions, instead of the
+          specific value of the session.
+      returned: changed
+      type: str
+      sample: monitor-enabled
+    real_state:
+      description:
+        - The actual REST API value for the C(state) attribute.
+        - This is different from the C(state) return value, insofar as the return value
+          can be considered a generalization of all available states, instead of the
+          specific value of the state.
+      returned: changed
+      type: str
+      sample: up
     reselect_tries:
       description:
         - The number of times the system tries to contact a pool member after a passive failure.
@@ -2426,20 +3244,62 @@ ltm_pools:
       description:
         - The Type of Service (ToS) level to use when sending packets to a server.
       returned: changed
-      type: string
+      type: str
       sample: pass-through
     server_link_qos:
       description:
         - The Quality of Service (QoS) level to use when sending packets to a server.
       returned: changed
-      type: string
+      type: str
       sample: pass-through
     service_down_action:
       description:
         - The action to take if the service specified in the pool is marked down.
       returned: changed
-      type: string
+      type: str
       sample: none
+    server_side_bits_in:
+      description:
+        - Number of server-side ingress bits.
+      returned: changed
+      type: int
+      sample: 1000
+    server_side_bits_out:
+      description:
+        - Number of server-side egress bits.
+      returned: changed
+      type: int
+      sample: 200
+    server_side_current_connections:
+      description:
+        - Number of current connections server-side.
+      returned: changed
+      type: int
+      sample: 300
+    server_side_max_connections:
+      description:
+        - Maximum number of connections server-side.
+      returned: changed
+      type: int
+      sample: 40
+    server_side_pkts_in:
+      description:
+        - Number of server-side ingress packets.
+      returned: changed
+      type: int
+      sample: 1098384
+    server_side_pkts_out:
+      description:
+        - Number of server-side egress packets.
+      returned: changed
+      type: int
+      sample: 3484734
+    server_side_total_connections:
+      description:
+        - Total number of connections.
+      returned: changed
+      type: int
+      sample: 24
     slow_ramp_time:
       description:
         - The ramp time for the pool.
@@ -2448,6 +3308,12 @@ ltm_pools:
       returned: changed
       type: int
       sample: 10
+    status_reason:
+      description:
+        - If there is a problem with the status of the pool, that problem is reported here.
+      returned: changed
+      type: str
+      sample: The children pool member(s) are down.
     members:
       description: List of LTM (Local Traffic Manager) pools.
       returned: when members exist in the pool.
@@ -2456,7 +3322,7 @@ ltm_pools:
         address:
           description: IP address of the pool member.
           returned: changed
-          type: string
+          type: str
           sample: 1.1.1.1
         connection_limit:
           description: The maximum number of concurrent connections allowed for a pool member.
@@ -2466,7 +3332,7 @@ ltm_pools:
         description:
           description: The description of the pool member.
           returned: changed
-          type: string
+          type: str
           sample: pool member 1
         dynamic_ratio:
           description:
@@ -2491,7 +3357,7 @@ ltm_pools:
             - Full name of the resource as known to BIG-IP.
             - Includes the port in the name
           returned: changed
-          type: string
+          type: str
           sample: "/Common/member:80"
         inherit_profile:
           description:
@@ -2515,13 +3381,13 @@ ltm_pools:
           description:
             - Relative name of the resource in BIG-IP.
           returned: changed
-          type: string
+          type: str
           sample: "member:80"
         partition:
           description:
             - Partition that the member exists on.
           returned: changed
-          type: string
+          type: str
           sample: Common
         priority_group:
           description:
@@ -2533,7 +3399,7 @@ ltm_pools:
           description:
             - The encapsulation profile to use for the pool member.
           returned: changed
-          type: string
+          type: str
           sample: ip4ip4
         rate_limit:
           description:
@@ -2551,14 +3417,20 @@ ltm_pools:
           description:
             - Enables or disables the pool member for new sessions.
           returned: changed
-          type: string
+          type: str
           sample: monitor-enabled
         state:
           description:
             - Controls the state of the pool member, overriding any monitors.
           returned: changed
-          type: string
+          type: str
           sample: down
+    total_requests:
+      description:
+        - Total requests.
+      returned: changed
+      type: int
+      sample: 8
   sample: hash/dictionary of values
 nodes:
   description: Node related facts.
@@ -2569,13 +3441,13 @@ nodes:
       description:
         - Full name of the resource as known to BIG-IP.
       returned: changed
-      type: string
+      type: str
       sample: /Common/5.6.7.8
     name:
       description:
         - Relative name of the resource in BIG-IP.
       returned: changed
-      type: string
+      type: str
       sample: 5.6.7.8
     ratio:
       description:
@@ -2587,7 +3459,7 @@ nodes:
       description:
         - Description of the node.
       returned: changed
-      type: string
+      type: str
       sample: My node
     connection_limit:
       description:
@@ -2599,7 +3471,7 @@ nodes:
       description:
         - IP address of the node.
       returned: changed
-      type: string
+      type: str
       sample: 2.3.4.5
     dynamic_ratio:
       description:
@@ -2618,37 +3490,37 @@ nodes:
         - Status of the node as reported by the monitor(s) associated with it.
         - This value is also used in determining node C(state).
       returned: changed
-      type: string
+      type: str
       sample: down
     session_status:
       description:
         - This value is also used in determining node C(state).
       returned: changed
-      type: string
+      type: str
       sample: enabled
     availability_status:
       description:
         - The availability of the node.
       returned: changed
-      type: string
+      type: str
       sample: offline
     enabled_status:
       description:
         - The enabled-ness of the node.
       returned: changed
-      type: string
+      type: str
       sample: enabled
     status_reason:
       description:
         - If there is a problem with the status of the node, that problem is reported here.
       returned: changed
-      type: string
+      type: str
       sample: /Common/https_443 No successful responses received...
     monitor_rule:
       description:
         - A string representation of the full monitor rule.
       returned: changed
-      type: string
+      type: str
       sample: /Common/https_443 and /Common/icmp
     monitors:
       description:
@@ -2661,7 +3533,7 @@ nodes:
         - The C(monitor_type) field related to the C(bigip_node) module, for this nodes
           monitors.
       returned: changed
-      type: string
+      type: str
       sample: and_list
   sample: hash/dictionary of values
 oneconnect_profiles:
@@ -2673,25 +3545,25 @@ oneconnect_profiles:
       description:
         - Full name of the resource as known to BIG-IP.
       returned: changed
-      type: string
+      type: str
       sample: /Common/oneconnect
     name:
       description:
         - Relative name of the resource in BIG-IP.
       returned: changed
-      type: string
+      type: str
       sample: oneconnect
     parent:
       description:
         - Profile from which this profile inherits settings.
       returned: changed
-      type: string
+      type: str
       sample: oneconnect
     description:
       description:
         - Description of the resource.
       returned: changed
-      type: string
+      type: str
       sample: My profile
     idle_timeout_override:
       description:
@@ -2711,7 +3583,7 @@ oneconnect_profiles:
           connections from being made until they expire, even if they could
           otherwise be reused.
       returned: changed
-      type: string
+      type: str
       sample: idle
     max_age:
       description:
@@ -2748,7 +3620,7 @@ oneconnect_profiles:
         - Specifies a source IP mask.
         - If no mask is provided, the value C(any6) is used.
       returned: changed
-      type: string
+      type: str
       sample: 255.255.255.0
   sample: hash/dictionary of values
 partitions:
@@ -2760,19 +3632,19 @@ partitions:
       description:
         - Full name of the resource as known to BIG-IP.
       returned: changed
-      type: string
+      type: str
       sample: Common
     name:
       description:
         - Relative name of the resource in BIG-IP.
       returned: changed
-      type: string
+      type: str
       sample: Common
     description:
       description:
         - Description of the partition.
       returned: changed
-      type: string
+      type: str
       sample: Tenant 1
     default_route_domain:
       description:
@@ -2791,13 +3663,13 @@ provision_info:
       description:
         - Full name of the resource as known to BIG-IP.
       returned: changed
-      type: string
+      type: str
       sample: asm
     name:
       description:
         - Relative name of the resource in BIG-IP.
       returned: changed
-      type: string
+      type: str
       sample: asm
     cpu_ratio:
       description:
@@ -2841,25 +3713,25 @@ self_ips:
       description:
         - Full name of the resource as known to BIG-IP.
       returned: changed
-      type: string
+      type: str
       sample: /Common/self1
     name:
       description:
         - Relative name of the resource in BIG-IP.
       returned: changed
-      type: string
+      type: str
       sample: self1
     description:
       description:
         - Description of the Self-IP.
       returned: changed
-      type: string
+      type: str
       sample: My self-ip
     netmask:
       description:
         - Netmask portion of the IP address. In dotted notation.
       returned: changed
-      type: string
+      type: str
       sample: 255.255.255.0
     netmask_cidr:
       description:
@@ -2877,19 +3749,19 @@ self_ips:
       description:
         - Traffic group the Self-IP is associated with.
       returned: changed
-      type: string
+      type: str
       sample: /Common/traffic-group-local-only
     service_policy:
       description:
         - Service policy assigned to the Self-IP.
       returned: changed
-      type: string
+      type: str
       sample: /Common/service1
     vlan:
       description:
         - VLAN associated with the Self-IP.
       returned: changed
-      type: string
+      type: str
       sample: /Common/vlan1
     allow_access_list:
       description:
@@ -2916,32 +3788,32 @@ server_ssl_profiles:
       description:
         - Full name of the resource as known to BIG-IP.
       returned: changed
-      type: string
+      type: str
       sample: serverssl
     name:
       description:
         - Relative name of the resource in BIG-IP.
       returned: changed
-      type: string
+      type: str
       sample: serverssl
     description:
       description:
         - Description of the resource.
       returned: changed
-      type: string
+      type: str
       sample: My profile
     parent:
       description:
         - Profile from which this profile inherits settings.
       returned: changed
-      type: string
+      type: str
       sample: serverssl
     alert_timeout:
       description:
         - Maximum time period in seconds to keep the SSL
           session active after alert message is sent, or indefinite.
       returned: changed
-      type: string
+      type: str
       sample: 100
     allow_expired_crl:
       description:
@@ -2953,7 +3825,7 @@ server_ssl_profiles:
       description:
         - Specifies the frequency of authentication.
       returned: changed
-      type: string
+      type: str
       sample: once
     authenticate_depth:
       description:
@@ -2966,7 +3838,7 @@ server_ssl_profiles:
         - Common Name (CN) that is embedded in a server certificate.
         - The system authenticates a server based on the specified CN.
       returned: changed
-      type: string
+      type: str
       sample: foo
     bypass_on_client_cert_fail:
       description:
@@ -2986,14 +3858,14 @@ server_ssl_profiles:
         - Name of the certificate file that is used as the
           certification authority certificate when SSL client certificate
           constrained delegation is enabled.
-      type: string
+      type: str
       sample: /Common/cacert.crt
     c3d_ca_key:
       description:
         - Name of the key file that is used as the
           certification authority key when SSL client certificate
           constrained delegation is enabled.
-      type: string
+      type: str
       sample: /Common/default.key
     c3d_cert_extension_includes:
       description:
@@ -3011,7 +3883,7 @@ server_ssl_profiles:
     ca_file:
       description:
         - Certificate authority file name.
-      type: string
+      type: str
       sample: default.crt
     cache_size:
       description:
@@ -3029,49 +3901,49 @@ server_ssl_profiles:
         - The name of the certificate installed on the traffic
           management system for the purpose of terminating or initiating an
           SSL connection.
-      type: string
+      type: str
       sample: /Common/default.crt
     chain:
       description:
         - Specifies or builds a certificate chain file that a client can use
           to authenticate the profile.
-      type: string
+      type: str
       sample: /Common/default.crt
     cipher_group:
       description:
         - Specifies a cipher group.
-      type: string
+      type: str
     ciphers:
       description:
         - Specifies a cipher name
-      type: string
+      type: str
       sample: DEFAULT
     crl_file:
       description:
         - Specifies the certificate revocation list file name.
-      type: string
+      type: str
     expire_cert_response_control:
       description:
         - Specifies the BIGIP action when the server certificate has
           expired.
-      type: string
+      type: str
       sample: drop
     handshake_timeout:
       description:
         - Specifies the handshake timeout in seconds.
-      type: string
+      type: str
       sample: 10
     key:
       description:
         - Specifies the key file name. Specifies the name of the key
           installed on the traffic management system for the purpose of
           terminating or initiating an SSL connection.
-      type: string
+      type: str
       sample: /Common/default.key
     max_active_handshakes:
       description:
         - Specifies the maximum number allowed SSL active handshakes.
-      type: string
+      type: str
       sample: 100
     mod_ssl_methods:
       description:
@@ -3087,7 +3959,7 @@ server_ssl_profiles:
       description:
         - Specifies the name of ocsp profile for purpose of validating
           status of server certificate.
-      type: string
+      type: str
     options:
       description:
         - Enables options, including some industry-related workarounds.
@@ -3096,7 +3968,7 @@ server_ssl_profiles:
     peer_cert_mode:
       description:
         - Specifies the peer certificate mode.
-      type: string
+      type: str
       sample: ignore
     proxy_ssl:
       description:
@@ -3115,12 +3987,12 @@ server_ssl_profiles:
       description:
         - Number of seconds from the initial connect time
           after which the system renegotiates an SSL session.
-      type: string
+      type: str
       sample: indefinite
     renegotiate_size:
       description:
         - Specifies a throughput size, in megabytes, of SSL renegotiation.
-      type: string
+      type: str
       sample: indefinite
     renegotiation:
       description:
@@ -3141,13 +4013,13 @@ server_ssl_profiles:
     secure_renegotiation:
       description:
         - Specifies the secure renegotiation mode.
-      type: string
+      type: str
       sample: require
     server_name:
       description:
         - Server name to be included in SNI (server name
           indication) extension during SSL handshake in ClientHello.
-      type: string
+      type: str
     session_mirroring:
       description:
         - Enables or disables the mirroring of sessions to high availability
@@ -3188,7 +4060,7 @@ server_ssl_profiles:
         - Specifies SSL sign hash algorithm which is used to sign and verify
           SSL Server Key Exchange and Certificate Verify messages for the
           specified SSL profiles.
-      type: string
+      type: str
       sample: sha1
     ssl_forward_proxy_bypass:
       description:
@@ -3213,7 +4085,7 @@ server_ssl_profiles:
       description:
         - Specifies the BIGIP action when the server certificate has
           untrusted CA.
-      type: string
+      type: str
       sample: drop
   sample: hash/dictionary of values
 software_hotfixes:
@@ -3225,20 +4097,20 @@ software_hotfixes:
       description:
         - Name of the image.
       returned: changed
-      type: string
+      type: str
       sample: Hotfix-BIGIP-13.0.0.3.0.1679-HF3.iso
     full_path:
       description:
         - Full name of the resource as known to BIG-IP.
       returned: changed
-      type: string
+      type: str
       sample: Hotfix-BIGIP-13.0.0.3.0.1679-HF3.iso
     build:
       description:
         - Build number of the image.
         - This is usually a sub-string of the C(name).
       returned: changed
-      type: string
+      type: str
       sample: 3.0.1679
     checksum:
       description:
@@ -3246,26 +4118,26 @@ software_hotfixes:
         - Note that this is the checksum that is stored inside the ISO. It is not
           the actual checksum of the ISO.
       returned: changed
-      type: string
+      type: str
       sample: df1ec715d2089d0fa54c0c4284656a98
     product:
       description:
         - Product contained in the ISO.
       returned: changed
-      type: string
+      type: str
       sample: BIG-IP
     id:
       description:
         - ID component of the image.
         - This is usually a sub-string of the C(name).
       returned: changed
-      type: string
+      type: str
       sample: HF3
     title:
       description:
         - Human friendly name of the image.
       returned: changed
-      type: string
+      type: str
       sample: Hotfix Version 3.0.1679
     verified:
       description:
@@ -3278,7 +4150,7 @@ software_hotfixes:
         - Version of software contained in the image.
         - This is a sub-string of the C(name).
       returned: changed
-      type: string
+      type: str
       sample: 13.0.0
   sample: hash/dictionary of values
 software_images:
@@ -3290,26 +4162,26 @@ software_images:
       description:
         - Name of the image.
       returned: changed
-      type: string
+      type: str
       sample: BIGIP-13.1.0.7-0.0.1.iso
     full_path:
       description:
         - Full name of the resource as known to BIG-IP.
       returned: changed
-      type: string
+      type: str
       sample: BIGIP-13.1.0.7-0.0.1.iso
     build:
       description:
         - Build number of the image.
         - This is usually a sub-string of the C(name).
       returned: changed
-      type: string
+      type: str
       sample: 0.0.1
     build_date:
       description:
         - Date of the build.
       returned: changed
-      type: string
+      type: str
       sample: "2018-05-05T15:26:30"
     checksum:
       description:
@@ -3317,7 +4189,7 @@ software_images:
         - Note that this is the checksum that is stored inside the ISO. It is not
           the actual checksum of the ISO.
       returned: changed
-      type: string
+      type: str
       sample: df1ec715d2089d0fa54c0c4284656a98
     file_size:
       description:
@@ -3329,13 +4201,13 @@ software_images:
       description:
         - Last modified date of the ISO.
       returned: changed
-      type: string
+      type: str
       sample: "2018-05-05T15:26:30"
     product:
       description:
         - Product contained in the ISO.
       returned: changed
-      type: string
+      type: str
       sample: BIG-IP
     verified:
       description:
@@ -3348,7 +4220,7 @@ software_images:
         - Version of software contained in the image.
         - This is a sub-string of the C(name).
       returned: changed
-      type: string
+      type: str
       sample: 13.1.0.7
   sample: hash/dictionary of values
 software_volumes:
@@ -3369,19 +4241,19 @@ software_volumes:
         - When a hotfix is installed, this refers to the base version of software
           that the hotfix requires.
       returned: changed
-      type: string
+      type: str
       sample: 0.0.6
     build:
       description:
         - Build version of the software installed in the volume.
       returned: changed
-      type: string
+      type: str
       sample: 0.0.6
     full_path:
       description:
         - Full name of the resource as known to BIG-IP.
       returned: changed
-      type: string
+      type: str
       sample: HD1.1
     default_boot_location:
       description:
@@ -3394,27 +4266,27 @@ software_volumes:
         - Relative name of the resource in BIG-IP.
         - This usually matches the C(full_name).
       returned: changed
-      type: string
+      type: str
       sample: HD1.1
     product:
       description:
         - The F5 product installed in this slot.
         - This should always be BIG-IP.
       returned: changed
-      type: string
+      type: str
       sample: BIG-IP
     status:
       description:
         - Status of the software installed, or being installed, in the volume.
         - When C(complete), indicates that the software has completed installing.
       returned: changed
-      type: string
+      type: str
       sample: complete
     version:
       description:
         - Version of software installed in the volume, excluding the C(build) number.
       returned: changed
-      type: string
+      type: str
       sample: 13.1.0.4
   sample: hash/dictionary of values
 ssl_certs:
@@ -3426,19 +4298,19 @@ ssl_certs:
       description:
         - Full name of the resource as known to BIG-IP.
       returned: changed
-      type: string
+      type: str
       sample: /Common/cert1
     name:
       description:
         - Relative name of the resource in BIG-IP.
       returned: changed
-      type: string
+      type: str
       sample: cert1
     key_type:
       description:
         - Specifies the type of cryptographic key associated with this certificate.
       returned: changed
-      type: string
+      type: str
       sample: rsa-private
     key_size:
       description:
@@ -3450,32 +4322,32 @@ ssl_certs:
       description:
         - Path on the BIG-IP where the cert can be found.
       returned: changed
-      type: string
+      type: str
       sample: /config/ssl/ssl.crt/f5-irule.crt
     sha1_checksum:
       description:
         - SHA1 checksum of the certificate.
       returned: changed
-      type: string
+      type: str
       sample: 1306e84e1e6a2da53816cefe1f684b80d6be1e3e
     subject:
       description:
         - Specifies X509 information of the certificate's subject.
       returned: changed
-      type: string
+      type: str
       sample: "emailAddress=support@f5.com,CN=..."
     last_update_time:
       description:
         - Specifies the last time at which the file-object was
           updated/modified.
       returned: changed
-      type: string
+      type: str
       sample: "2018-05-15T21:11:15Z"
     issuer:
       description:
         - Specifies X509 information of the certificate's issuer.
       returned: changed
-      type: string
+      type: str
       sample: "emailAddress=support@f5.com,...CN=support.f5.com,"
     is_bundle:
       description:
@@ -3488,14 +4360,14 @@ ssl_certs:
       description:
         - Displays the SHA-256 fingerprint of the certificate.
       returned: changed
-      type: string
+      type: str
       sample: "SHA256/88:A3:05:...:59:01:EA:5D:B0"
     expiration_date:
       description:
         - Specifies a string representation of the expiration date of the
           certificate.
       returned: changed
-      type: string
+      type: str
       sample: "Aug 13 21:21:29 2031 GMT"
     expiration_timestamp:
       description:
@@ -3508,7 +4380,7 @@ ssl_certs:
       description:
         - Specifies the time at which the file-object was created.
       returned: changed
-      type: string
+      type: str
       sample: "2018-05-15T21:11:15Z"
   sample: hash/dictionary of values
 ssl_keys:
@@ -3520,20 +4392,20 @@ ssl_keys:
       description:
         - Full name of the resource as known to BIG-IP.
       returned: changed
-      type: string
+      type: str
       sample: /Common/key1
     name:
       description:
         - Relative name of the resource in BIG-IP.
       returned: changed
-      type: string
+      type: str
       sample: key1
     key_type:
       description:
         - Specifies the cryptographic type of the key in question. That is,
           which algorithm this key is compatible with.
       returned: changed
-      type: string
+      type: str
       sample: rsa-private
     key_size:
       description:
@@ -3546,19 +4418,19 @@ ssl_keys:
       description:
         - Specifies the type of security used to handle or store the key.
       returned: changed
-      type: string
+      type: str
       sample: normal
     system_path:
       description:
         - The path on the filesystem where the key is stored.
       returned: changed
-      type: string
+      type: str
       sample: /config/ssl/ssl.key/default.key
     sha1_checksum:
       description:
         - The SHA1 checksum of the key.
       returned: changed
-      type: string
+      type: str
       sample: 1fcf7de3dd8e834d613099d8e10b2060cd9ecc9f
   sample: hash/dictionary of values
 system_db:
@@ -3570,37 +4442,37 @@ system_db:
       description:
         - Full name of the resource as known to BIG-IP.
       returned: changed
-      type: string
+      type: str
       sample: vendor.wwwurl
     name:
       description:
         - Relative name of the resource in BIG-IP.
       returned: changed
-      type: string
+      type: str
       sample: vendor.wwwurl
     default:
       description:
         - Default value of the key.
       returned: changed
-      type: string
+      type: str
       sample: www.f5.com
     scf_config:
       description:
         - Whether the database key would be found in an SCF config or not.
       returned: changed
-      type: string
+      type: str
       sample: false
     value:
       description:
         - The value of the key
       returned: changed
-      type: string
+      type: str
       sample: www.f5.com
     value_range:
       description:
         - The accepted range of values for the key
       returned: changed
-      type: string
+      type: str
       sample: string
   sample: hash/dictionary of values
 system_info:
@@ -3612,13 +4484,13 @@ system_info:
       description:
         - Media Access Control address (MAC address) of the device.
       returned: changed
-      type: string
+      type: str
       sample: "fa:16:3e:c3:42:6f"
     marketing_name:
       description:
         - Marketing name of the device platform.
       returned: changed
-      type: string
+      type: str
       sample: BIG-IP Virtual Edition
     time:
       description:
@@ -3671,17 +4543,17 @@ system_info:
         model:
           description:
             - The model of the hardware.
-          type: string
+          type: str
           sample: Virtual Disk
         name:
           description:
             - The name of the hardware.
-          type: string
+          type: str
           sample: HD1
         type:
           description:
             - The type of hardware.
-          type: string
+          type: str
           sample: physical-disk
         versions:
           description:
@@ -3691,38 +4563,38 @@ system_info:
             name:
               description:
                 - Name of the property
-              type: string
+              type: str
               sample: Size
             version:
               description:
                 - Value of the property
-              type: string
+              type: str
               sample: 154.00G
     package_edition:
       description:
         - Displays the software edition.
       returned: changed
-      type: string
+      type: str
       sample: Point Release 7
     package_version:
       description:
         - A string combining the C(product_build) and C(product_build_date).
-      type: string
+      type: str
       sample: "Build 0.0.1 - Tue May 15 15:26:30 PDT 2018"
     product_code:
       description:
         - Code identifying the product.
-      type: string
+      type: str
       sample: BIG-IP
     product_build:
       description:
         - Build version of the release version.
-      type: string
+      type: str
       sample: 0.0.1
     product_version:
       description:
         - Major product version of the running software.
-      type: string
+      type: str
       sample: 13.1.0.7
     product_built:
       description:
@@ -3732,7 +4604,7 @@ system_info:
     product_build_date:
       description:
         - Human readable build date.
-      type: string
+      type: str
       sample: "Tue May 15 15:26:30 PDT 2018"
     product_changelist:
       description:
@@ -3747,29 +4619,29 @@ system_info:
     chassis_serial:
       description:
         - Serial of the chassis
-      type: string
+      type: str
       sample: 11111111-2222-3333-444444444444
     host_board_part_revision:
       description:
         - Revision of the host board.
-      type: string
+      type: str
     host_board_serial:
       description:
         - Serial of the host board.
-      type: string
+      type: str
     platform:
       description:
         - Platform identifier.
-      type: string
+      type: str
       sample: Z100
     switch_board_part_revision:
       description:
         - Switch board revision.
-      type: string
+      type: str
     switch_board_serial:
       description:
         - Serial of the switch board.
-      type: string
+      type: str
     uptime:
       description:
         - Time, in seconds, since the system booted.
@@ -3785,25 +4657,25 @@ tcp_monitors:
       description:
         - Full name of the resource as known to BIG-IP.
       returned: changed
-      type: string
+      type: str
       sample: /Common/tcp
     name:
       description:
         - Relative name of the resource in BIG-IP.
       returned: changed
-      type: string
+      type: str
       sample: tcp
     parent:
       description:
         - Profile from which this profile inherits settings.
       returned: changed
-      type: string
+      type: str
       sample: tcp
     description:
       description:
         - Description of the resource.
       returned: changed
-      type: string
+      type: str
       sample: My monitor
     adaptive:
       description:
@@ -3814,7 +4686,7 @@ tcp_monitors:
       description:
         - Specifies whether the adaptive-divergence-value is C(relative) or
           C(absolute).
-      type: string
+      type: str
       sample: relative
     adaptive_divergence_value:
       description:
@@ -3838,7 +4710,7 @@ tcp_monitors:
       description:
         - Specifies the IP address and service port of the resource that is
           the destination of this monitor.
-      type: string
+      type: str
       sample: "*:*"
     interval:
       description:
@@ -3898,31 +4770,31 @@ tcp_half_open_monitors:
       description:
         - Full name of the resource as known to BIG-IP.
       returned: changed
-      type: string
+      type: str
       sample: /Common/tcp
     name:
       description:
         - Relative name of the resource in BIG-IP.
       returned: changed
-      type: string
+      type: str
       sample: tcp
     parent:
       description:
         - Profile from which this profile inherits settings.
       returned: changed
-      type: string
+      type: str
       sample: tcp
     description:
       description:
         - Description of the resource.
       returned: changed
-      type: string
+      type: str
       sample: My monitor
     destination:
       description:
         - Specifies the IP address and service port of the resource that is
           the destination of this monitor.
-      type: string
+      type: str
       sample: "*:*"
     interval:
       description:
@@ -3970,25 +4842,25 @@ tcp_profiles:
       description:
         - Full name of the resource as known to BIG-IP.
       returned: changed
-      type: string
+      type: str
       sample: tcp
     name:
       description:
         - Relative name of the resource in BIG-IP.
       returned: changed
-      type: string
+      type: str
       sample: /Common/tcp
     parent:
       description:
         - Profile from which this profile inherits settings.
       returned: changed
-      type: string
+      type: str
       sample: tcp
     description:
       description:
         - Description of the resource.
       returned: changed
-      type: string
+      type: str
       sample: My profile
     abc:
       description:
@@ -4031,7 +4903,7 @@ tcp_profiles:
           after entering the LAST-ACK state.
         - When C(indefinite), specifies that TCP connections in the LAST-ACK state
           do not close until they meet the maximum retransmissions timeout.
-      type: string
+      type: str
       sample: indefinite
     congestion_metrics_cache:
       description:
@@ -4054,7 +4926,7 @@ tcp_profiles:
         - Return values may include, C(high-speed), C(cdg), C(chd), C(none), C(cubic),
           C(illinois), C(new-reno), C(reno), C(scalable), C(vegas), C(westwood), and
           C(woodside).
-      type: string
+      type: str
       sample: high-speed
     deferred_accept:
       description:
@@ -4120,19 +4992,19 @@ tcp_profiles:
       description:
         - Specifies the length of time that a TCP connection is in the FIN-WAIT-1 or
           CLOSING state before quitting.
-      type: string
+      type: str
       sample: indefinite
     fin_wait_2:
       description:
         - Specifies the length of time that a TCP connection is in the FIN-WAIT-2 state
           before quitting.
-      type: string
+      type: str
       sample: 100
     idle_timeout:
       description:
         - Specifies the length of time that a connection is idle (has no traffic) before
           the connection is eligible for deletion.
-      type: string
+      type: str
       sample: 300
     initial_congestion_window_size:
       description:
@@ -4148,18 +5020,18 @@ tcp_profiles:
       description:
         - Specifies the Don't Fragment (DF) bit setting in the IP Header of the outgoing
           TCP packet.
-      type: string
+      type: str
       sample: pmtu
     ip_tos:
       description:
         - Specifies the L3 Type of Service (ToS) level that the system inserts in TCP
           packets destined for clients.
-      type: string
+      type: str
       sample: mimic
     time_to_live:
       description:
         - Specifies the outgoing TCP packet's IP Header TTL mode.
-      type: string
+      type: str
       sample: proxy
     time_to_live_v4:
       description:
@@ -4175,7 +5047,7 @@ tcp_profiles:
       description:
         - Specifies how frequently the system sends data over an idle TCP
           connection, to determine whether the connection is still valid.
-      type: string
+      type: str
       sample: 50
     limited_transmit_recovery:
       description:
@@ -4188,7 +5060,7 @@ tcp_profiles:
       description:
         - Specifies the L2 Quality of Service (QoS) level that the system inserts
           in TCP packets destined for clients.
-      type: string
+      type: str
       sample: 200
     max_segment_retrans:
       description:
@@ -4242,7 +5114,7 @@ tcp_profiles:
       description:
         - Specifies an action on fallback, that is, when MPTCP transitions
           to regular TCP, because something prevents MPTCP from working correctly.
-      type: string
+      type: str
       sample: reset
     mptcp_fast_join:
       description:
@@ -4346,7 +5218,7 @@ tcp_profiles:
     push_flag:
       description:
         - Specifies how the BIG-IP system receives ACKs.
-      type: string
+      type: str
       sample: default
     rate_pace:
       description:
@@ -4439,7 +5311,7 @@ tcp_profiles:
       description:
         - Specifies the length of time that a TCP connection remains in the
           TIME-WAIT state before entering the CLOSED state.
-      type: string
+      type: str
       sample: 2000
     timestamps:
       description:
@@ -4457,7 +5329,7 @@ tcp_profiles:
       description:
         - Specifies the timeout in milliseconds for terminating a connection
           with an effective zero length TCP transmit window.
-      type: string
+      type: str
       sample: 2000
   sample: hash/dictionary of values
 traffic_groups:
@@ -4469,19 +5341,19 @@ traffic_groups:
       description:
         - Full name of the resource as known to BIG-IP.
       returned: changed
-      type: string
+      type: str
       sample: /Common/tg1
     name:
       description:
         - Relative name of the resource in BIG-IP.
       returned: changed
-      type: string
+      type: str
       sample: tg1
     description:
       description:
         - Description of the traffic group.
       returned: changed
-      type: string
+      type: str
       sample: My traffic group
     auto_failback_enabled:
       description:
@@ -4522,7 +5394,7 @@ traffic_groups:
       description:
         - Specifies a MAC address for the traffic group.
       returned: changed
-      type: string
+      type: str
       sample: "00:98:76:54:32:10"
   sample: hash/dictionary of values
 trunks:
@@ -4534,19 +5406,19 @@ trunks:
       description:
         - Full name of the resource as known to BIG-IP.
       returned: changed
-      type: string
+      type: str
       sample: /Common/trunk1
     name:
       description:
         - Relative name of the resource in BIG-IP.
       returned: changed
-      type: string
+      type: str
       sample: trunk1
     description:
       description:
         - Description of the Trunk.
       returned: changed
-      type: string
+      type: str
       sample: My trunk
     media_speed:
       description:
@@ -4558,7 +5430,7 @@ trunks:
       description:
         - The operation mode for LACP.
       returned: changed
-      type: string
+      type: str
       sample: passive
     lacp_enabled:
       description:
@@ -4589,7 +5461,7 @@ trunks:
         - The LACP policy that the trunk uses to determine which member link can handle
           new traffic.
       returned: changed
-      type: string
+      type: str
       sample: maximum-bandwidth
     lacp_timeout:
       description:
@@ -4609,7 +5481,7 @@ trunks:
         - The system uses this hash to determine which interface to use for forwarding
           traffic.
       returned: changed
-      type: string
+      type: str
       sample: src-dst-ipport
     configured_member_count:
       description:
@@ -4627,25 +5499,25 @@ udp_profiles:
       description:
         - Full name of the resource as known to BIG-IP.
       returned: changed
-      type: string
+      type: str
       sample: udp
     name:
       description:
         - Relative name of the resource in BIG-IP.
       returned: changed
-      type: string
+      type: str
       sample: /Common/udp
     parent:
       description:
         - Profile from which this profile inherits settings.
       returned: changed
-      type: string
+      type: str
       sample: udp
     description:
       description:
         - Description of the resource.
       returned: changed
-      type: string
+      type: str
       sample: My profile
     allow_no_payload:
       description:
@@ -4691,7 +5563,7 @@ udp_profiles:
         - When C(set), sets the outgoing UDP packet DF bit.
         - When C(clear), clears the outgoing UDP packet DF bit.
       returned: changed
-      type: string
+      type: str
       sample: pmtu
     ip_tos_to_client:
       description:
@@ -4699,7 +5571,7 @@ udp_profiles:
           system assigns to UDP packets when sending them to clients.
         - May be numeric, or the values C(pass-through) or C(mimic).
       returned: changed
-      type: string
+      type: str
       sample: mimic
     ip_ttl_mode:
       description:
@@ -4712,7 +5584,7 @@ udp_profiles:
         - When C(set), set the IP TTL with the specified values in C(ip_ttl_v4) and
           C(ip_ttl_v6) values in the same profile.
       returned: changed
-      type: string
+      type: str
       sample: proxy
     ip_ttl_v4:
       description:
@@ -4732,7 +5604,7 @@ udp_profiles:
           UDP packets when sending them to clients.
         - May be either numberic, or the value C(pass-through).
       returned: changed
-      type: string
+      type: str
       sample: pass-through
     no_checksum:
       description:
@@ -4759,13 +5631,13 @@ vcmp_guests:
       description:
         - Full name of the resource as known to BIG-IP.
       returned: changed
-      type: string
+      type: str
       sample: guest1
     name:
       description:
         - Relative name of the resource in BIG-IP.
       returned: changed
-      type: string
+      type: str
       sample: guest1
     allowed_slots:
       description:
@@ -4795,37 +5667,37 @@ vcmp_guests:
       description:
         - FQDN assigned to the guest.
       returned: changed
-      type: string
+      type: str
       sample: guest1.localdomain
     hotfix_image:
       description:
         - hotfix image to install onto any of this guest's newly created virtual disks.
       returned: changed
-      type: string
+      type: str
       sample: Hotfix-BIGIP-12.1.3.4-0.0.2-hf1.iso
     initial_image:
       description:
         - Software image to install onto any of this guest's newly created virtual disks.
       returned: changed
-      type: string
+      type: str
       sample: BIGIP-12.1.3.4-0.0.2.iso
     mgmt_route:
       description:
         - Management gateway IP address for the guest.
       returned: changed
-      type: string
+      type: str
       sample: 2.2.2.1
     mgmt_address:
       description:
         - Management IP address configuration for the guest.
       returned: changed
-      type: string
+      type: str
       sample: 2.3.2.3
     mgmt_network:
       description:
         - Accessibility of this vCMP guest's management network.
       returned: changed
-      type: string
+      type: str
       sample: bridged
     min_number_of_slots:
       description:
@@ -4844,7 +5716,7 @@ vcmp_guests:
       description:
         - The SSL hardware allocation mode for the guest.
       returned: changed
-      type: string
+      type: str
       sample: shared
     state:
       description:
@@ -4852,13 +5724,13 @@ vcmp_guests:
         - May be one of C(configured), C(provisioned), or C(deployed).
         - Each state implies the actions of all states before it.
       returned: changed
-      type: string
+      type: str
       sample: provisioned
     virtual_disk:
       description:
         - The filename of the virtual disk to use for this guest.
       returned: changed
-      type: string
+      type: str
       sample: guest1.img
   sample: hash/dictionary of values
 virtual_addresses:
@@ -4870,19 +5742,19 @@ virtual_addresses:
       description:
         - Full name of the resource as known to BIG-IP.
       returned: changed
-      type: string
+      type: str
       sample: /Common/2.3.4.5
     name:
       description:
         - Relative name of the resource in BIG-IP.
       returned: changed
-      type: string
+      type: str
       sample: 2.3.4.5
     address:
       description:
         - The virtual IP address.
       returned: changed
-      type: string
+      type: str
       sample: 2.3.4.5
     arp_enabled:
       description:
@@ -4908,7 +5780,7 @@ virtual_addresses:
       description:
         - The description of the virtual address.
       returned: changed
-      type: string
+      type: str
       sample: My virtual address
     enabled:
       description:
@@ -4934,7 +5806,7 @@ virtual_addresses:
       description:
         - Netmask of the virtual address.
       returned: changed
-      type: string
+      type: str
       sample: 255.255.255.255
     route_advertisement:
       description:
@@ -4946,7 +5818,7 @@ virtual_addresses:
       description:
         - Traffic group on which the virtual address is active.
       returned: changed
-      type: string
+      type: str
       sample: /Common/traffic-group-1
     spanning:
       description:
@@ -4966,17 +5838,23 @@ virtual_servers:
   returned: When C(virtual-addresses) is specified in C(gather_subset).
   type: complex
   contains:
+    availability_status:
+      description:
+        - The availability of the virtual server.
+      returned: changed
+      type: str
+      sample: offline
     full_path:
       description:
         - Full name of the resource as known to BIG-IP.
       returned: changed
-      type: string
+      type: str
       sample: /Common/2.3.4.5
     name:
       description:
         - Relative name of the resource in BIG-IP.
       returned: changed
-      type: string
+      type: str
       sample: 2.3.4.5
     auto_lasthop:
       description:
@@ -4984,21 +5862,81 @@ virtual_servers:
           that transmitted the request, even if the routing table points to a different
           network or interface.
       returned: changed
-      type: string
+      type: str
       sample: default
     bw_controller_policy:
       description:
         - The bandwidth controller for the system to use to enforce a throughput policy
           for incoming network traffic.
       returned: changed
-      type: string
+      type: str
       sample: /Common/bw1
+    client_side_bits_in:
+      description:
+        - Number of client-side ingress bits.
+      returned: changed
+      type: int
+      sample: 1000
+    client_side_bits_out:
+      description:
+        - Number of client-side egress bits.
+      returned: changed
+      type: int
+      sample: 200
+    client_side_current_connections:
+      description:
+        - Number of current connections client-side.
+      returned: changed
+      type: int
+      sample: 300
+    client_side_evicted_connections:
+      description:
+        - Number of evicted connections client-side.
+      returned: changed
+      type: int
+      sample: 100
+    client_side_max_connections:
+      description:
+        - Maximum number of connections client-side.
+      returned: changed
+      type: int
+      sample: 40
+    client_side_pkts_in:
+      description:
+        - Number of client-side ingress packets.
+      returned: changed
+      type: int
+      sample: 1098384
+    client_side_pkts_out:
+      description:
+        - Number of client-side egress packets.
+      returned: changed
+      type: int
+      sample: 3484734
+    client_side_slow_killed:
+      description:
+        - Number of slow connections killed, client-side.
+      returned: changed
+      type: int
+      sample: 234
+    client_side_total_connections:
+      description:
+        - Total number of connections.
+      returned: changed
+      type: int
+      sample: 24
     cmp_enabled:
       description:
         - Whether or not clustered multi-processor (CMP) acceleration is enabled.
       returned: changed
       type: bool
       sample: yes
+    cmp_mode:
+      description:
+        - The clustered-multiprocessing mode.
+      returned: changed
+      type: str
+      sample: all-cpus
     connection_limit:
       description:
         - Maximum number of concurrent connections you want to allow for the virtual server.
@@ -5009,7 +5947,7 @@ virtual_servers:
       description:
         - The description of the virtual server.
       returned: changed
-      type: string
+      type: str
       sample: My virtual
     enabled:
       description:
@@ -5017,19 +5955,169 @@ virtual_servers:
       returned: changed
       type: bool
       sample: yes
+    ephemeral_bits_in:
+      description:
+        - Number of ephemeral ingress bits.
+      returned: changed
+      type: int
+      sample: 1000
+    ephemeral_bits_out:
+      description:
+        - Number of ephemeral egress bits.
+      returned: changed
+      type: int
+      sample: 200
+    ephemeral_current_connections:
+      description:
+        - Number of ephemeral current connections.
+      returned: changed
+      type: int
+      sample: 300
+    ephemeral_evicted_connections:
+      description:
+        - Number of ephemeral evicted connections.
+      returned: changed
+      type: int
+      sample: 100
+    ephemeral_max_connections:
+      description:
+        - Maximum number of ephemeral connections.
+      returned: changed
+      type: int
+      sample: 40
+    ephemeral_pkts_in:
+      description:
+        - Number of ephemeral ingress packets.
+      returned: changed
+      type: int
+      sample: 1098384
+    ephemeral_pkts_out:
+      description:
+        - Number of ephemeral egress packets.
+      returned: changed
+      type: int
+      sample: 3484734
+    ephemeral_slow_killed:
+      description:
+        - Number of ephemeral slow connections killed.
+      returned: changed
+      type: int
+      sample: 234
+    ephemeral_total_connections:
+      description:
+        - Total number of ephemeral connections.
+      returned: changed
+      type: int
+      sample: 24
+    total_software_accepted_syn_cookies:
+      description:
+        - SYN Cookies Total Software Accepted.
+      returned: changed
+      type: int
+      sample: 0
+    total_hardware_accepted_syn_cookies:
+      description:
+        - SYN Cookies Total Hardware Accepted.
+      returned: changed
+      type: int
+      sample: 0
+    total_hardware_syn_cookies:
+      description:
+        - SYN Cookies Total Hardware
+      returned: changed
+      type: int
+      sample: 0
+    hardware_syn_cookie_instances:
+      description:
+        - Hardware SYN Cookie Instances
+      returned: changed
+      type: int
+      sample: 0
+    total_software_rejected_syn_cookies:
+      description:
+        - Total Software Rejected
+      returned: changed
+      type: int
+      sample: 0
+    software_syn_cookie_instances:
+      description:
+        - Software SYN Cookie Instances
+      returned: changed
+      type: int
+      sample: 0
+    current_syn_cache:
+      description:
+        - Current SYN Cache
+      returned: changed
+      type: int
+      sample: 0
+    max_conn_duration:
+      description:
+        - Max Conn Duration/msec
+      returned: changed
+      type: int
+      sample: 0
+    mean_conn_duration:
+      description:
+        - Mean Conn Duration/msec
+      returned: changed
+      type: int
+      sample: 0
+    min_conn_duration:
+      description:
+        - Min Conn Duration/msec
+      returned: changed
+      type: int
+      sample: 0
+    cpu_usage_ratio_last_5_min:
+      description:
+        - CPU Usage Ratio (%) Last 5 Minutes
+      returned: changed
+      type: int
+      sample: 0
+    cpu_usage_ratio_last_5_sec:
+      description:
+        - CPU Usage Ratio (%) Last 5 Seconds
+      returned: changed
+      type: int
+      sample: 0
+    cpu_usage_ratio_last_1_min:
+      description:
+        - CPU Usage Ratio (%) Last 1 Minute
+      returned: changed
+      type: int
+      sample: 0
+    syn_cache_overflow:
+      description:
+        - SYN Cache Overflow
+      returned: changed
+      type: int
+      sample: 0
+    total_software_syn_cookies:
+      description:
+        - Total Software
+      returned: changed
+      type: int
+      sample: 0
+    syn_cookies_status:
+      description:
+        - SYN Cookies Status
+      returned: changed
+      type: str
+      sample: not-activated
     fallback_persistence_profile:
       description:
         - Fallback persistence profile for the virtual server to use
           when the default persistence profile is not available.
       returned: changed
-      type: string
+      type: str
       sample: /Common/fallback1
     persistence_profile:
       description:
         - The persistence profile you want the system to use as the default
           for this virtual server.
       returned: changed
-      type: string
+      type: str
       sample: /Common/persist1
     translate_port:
       description:
@@ -5054,14 +6142,14 @@ virtual_servers:
         - Name of the virtual address and service on which the virtual server
           listens for connections.
       returned: changed
-      type: string
+      type: str
       sample: /Common/2.2.3.3%1:76
     last_hop_pool:
       description:
         - Name of the last hop pool that you want the virtual
           server to use to direct reply traffic to the last hop router.
       returned: changed
-      type: string
+      type: str
       sample: /Common/pool1
     nat64_enabled:
       description:
@@ -5073,25 +6161,25 @@ virtual_servers:
       description:
         - Specifies whether the system preserves the source port of the connection.
       returned: changed
-      type: string
+      type: str
       sample: preserve
     ip_intelligence_policy:
       description:
         - IP Intelligence policy assigned to the virtual
       returned: changed
-      type: string
+      type: str
       sample: /Common/ip1
     protocol:
       description:
         - IP protocol for which you want the virtual server to direct traffic.
       returned: changed
-      type: string
+      type: str
       sample: tcp
     default_pool:
       description:
         - Pool name that you want the virtual server to use as the default pool.
       returned: changed
-      type: string
+      type: str
       sample: /Common/pool1
     rate_limit_mode:
       description:
@@ -5099,7 +6187,7 @@ virtual_servers:
           per source address, per destination address, or some combination
           thereof.
       returned: changed
-      type: string
+      type: str
       sample: object
     rate_limit_source_mask:
       description:
@@ -5119,14 +6207,20 @@ virtual_servers:
         - Specifies the type of source address translation associated
           with the specified virtual server.
       returned: changed
-      type: string
+      type: str
       sample: none
     snat_pool:
       description:
         - Specifies the name of a LSN or SNAT pool used by the specified virtual server.
       returned: changed
-      type: string
+      type: str
       sample: /Common/pool1
+    status_reason:
+      description:
+        - If there is a problem with the status of the virtual, that problem is reported here.
+      returned: changed
+      type: str
+      sample: The children pool member(s) either don't have service checking...
     gtm_score:
       description:
         - Specifies a score that is associated with the virtual server.
@@ -5139,7 +6233,7 @@ virtual_servers:
           virtual server to use to enforce a throughput policy for incoming
           network traffic.
       returned: changed
-      type: string
+      type: str
     rate_limit_destination_mask:
       description:
         - Specifies a mask, in bits, to be applied to the destination
@@ -5152,7 +6246,7 @@ virtual_servers:
         - Specifies an IP address or network from which the virtual server
           will accept traffic.
       returned: changed
-      type: string
+      type: str
       sample: 0.0.0./0
     authentication_profile:
       description:
@@ -5183,13 +6277,13 @@ virtual_servers:
       description:
         - Virtual server type.
       returned: changed
-      type: string
+      type: str
       sample: standard
     destination_address:
       description:
         - Address portion of the C(destination).
       returned: changed
-      type: string
+      type: str
       sample: 2.3.3.2
     destination_port:
       description:
@@ -5207,20 +6301,26 @@ virtual_servers:
             - Which side of the connection the profile affects; either C(all),
               C(client-side) or C(server-side).
           returned: changed
-          type: string
+          type: str
           sample: client-side
         full_path:
           description:
             - Full name of the resource as known to BIG-IP.
           returned: changed
-          type: string
+          type: str
           sample: /Common/tcp
         name:
           description:
             - Relative name of the resource in BIG-IP.
           returned: changed
-          type: string
+          type: str
           sample: tcp
+    total_requests:
+      description:
+        - Total requests.
+      returned: changed
+      type: int
+      sample: 8
   sample: hash/dictionary of values
 vlans:
   description: List of VLAN facts.
@@ -5232,25 +6332,25 @@ vlans:
         - Allows the system to send return traffic to the MAC address that transmitted the
           request, even if the routing table points to a different network or interface.
       returned: changed
-      type: string
+      type: str
       sample: enabled
     cmp_hash_algorithm:
       description:
         - Specifies how the traffic on the VLAN will be disaggregated.
       returned: changed
-      type: string
+      type: str
       sample: default
     description:
       description:
         - Description of the VLAN.
       returned: changed
-      type: string
+      type: str
       sample: My vlan
     failsafe_action:
       description:
         - Action for the system to take when the fail-safe mechanism is triggered.
       returned: changed
-      type: string
+      type: str
       sample: reboot
     failsafe_enabled:
       description:
@@ -5277,7 +6377,7 @@ vlans:
         - Whether switch ports placed in the VLAN are configured for switch learning,
           forwarding only, or dropped.
       returned: changed
-      type: string
+      type: str
       sample: enable-forward
     interfaces:
       description:
@@ -5289,13 +6389,13 @@ vlans:
           description:
             - Full name of the resource as known to BIG-IP.
           returned: changed
-          type: string
+          type: str
           sample: 1.3
         name:
           description:
             - Relative name of the resource in BIG-IP.
           returned: changed
-          type: string
+          type: str
           sample: 1.3
         tagged:
           description:
@@ -5345,7 +6445,7 @@ vlans:
       description:
         - Media access control (MAC) address for the lowest-numbered interface assigned to this VLAN.
       returned: changed
-      type: string
+      type: str
       sample: "fa:16:3e:10:da:ff"
     tag:
       description:
@@ -5367,10 +6467,9 @@ from ansible.module_utils.parsing.convert_bool import BOOLEANS_TRUE
 from ansible.module_utils.six import iteritems
 from ansible.module_utils.six import string_types
 from collections import namedtuple
+from distutils.version import LooseVersion
 
 try:
-    from library.module_utils.network.f5.bigip import HAS_F5SDK
-    from library.module_utils.network.f5.bigip import F5Client
     from library.module_utils.network.f5.bigip import F5RestClient
     from library.module_utils.network.f5.common import F5ModuleError
     from library.module_utils.network.f5.common import AnsibleF5Parameters
@@ -5378,15 +6477,12 @@ try:
     from library.module_utils.network.f5.common import f5_argument_spec
     from library.module_utils.network.f5.common import fq_name
     from library.module_utils.network.f5.common import flatten_boolean
+    from library.module_utils.network.f5.common import transform_name
     from library.module_utils.network.f5.ipaddress import is_valid_ip
-    try:
-        from library.module_utils.network.f5.common import iControlUnexpectedHTTPError
-        from f5.utils.responses.handlers import Stats
-    except ImportError:
-        HAS_F5SDK = False
+    from library.module_utils.network.f5.icontrol import modules_provisioned
+    from library.module_utils.network.f5.icontrol import tmos_version
+    from library.module_utils.network.f5.urls import parseStats
 except ImportError:
-    from ansible.module_utils.network.f5.bigip import HAS_F5SDK
-    from ansible.module_utils.network.f5.bigip import F5Client
     from ansible.module_utils.network.f5.bigip import F5RestClient
     from ansible.module_utils.network.f5.common import F5ModuleError
     from ansible.module_utils.network.f5.common import AnsibleF5Parameters
@@ -5394,65 +6490,11 @@ except ImportError:
     from ansible.module_utils.network.f5.common import f5_argument_spec
     from ansible.module_utils.network.f5.common import fq_name
     from ansible.module_utils.network.f5.common import flatten_boolean
+    from ansible.module_utils.network.f5.common import transform_name
     from ansible.module_utils.network.f5.ipaddress import is_valid_ip
-    try:
-        from ansible.module_utils.network.f5.common import iControlUnexpectedHTTPError
-        from f5.utils.responses.handlers import Stats
-    except ImportError:
-        HAS_F5SDK = False
-
-
-def parseStats(entry):
-    if 'description' in entry:
-        return entry['description']
-    elif 'value' in entry:
-        return entry['value']
-    elif 'entries' in entry or 'nestedStats' in entry and 'entries' in entry['nestedStats']:
-        if 'entries' in entry:
-            entries = entry['entries']
-        else:
-            entries = entry['nestedStats']['entries']
-        result = None
-
-        for name in entries:
-            entry = entries[name]
-            if 'https://localhost' in name:
-                name = name.split('/')
-                name = name[-1]
-                if result and isinstance(result, list):
-                    result.append(parseStats(entry))
-                elif result and isinstance(result, dict):
-                    result[name] = parseStats(entry)
-                else:
-                    try:
-                        int(name)
-                        result = list()
-                        result.append(parseStats(entry))
-                    except ValueError:
-                        result = dict()
-                        result[name] = parseStats(entry)
-            else:
-                if '.' in name:
-                    names = name.split('.')
-                    key = names[0]
-                    value = names[1]
-                    if not result[key]:
-                        result[key] = {}
-                    result[key][value] = parseStats(entry)
-                else:
-                    if result and isinstance(result, list):
-                        result.append(parseStats(entry))
-                    elif result and isinstance(result, dict):
-                        result[name] = parseStats(entry)
-                    else:
-                        try:
-                            int(name)
-                            result = list()
-                            result.append(parseStats(entry))
-                        except ValueError:
-                            result = dict()
-                            result[name] = parseStats(entry)
-        return result
+    from ansible.module_utils.network.f5.icontrol import modules_provisioned
+    from ansible.module_utils.network.f5.icontrol import tmos_version
+    from ansible.module_utils.network.f5.urls import parseStats
 
 
 class BaseManager(object):
@@ -5461,9 +6503,28 @@ class BaseManager(object):
         self.client = kwargs.get('client', None)
         self.kwargs = kwargs
 
-    def read_stats_from_device(self, resource):
-        stats = Stats(resource.stats.load())
-        return stats.stat
+        # A list of modules currently provisioned on the device.
+        #
+        # This list is used by different fact managers to check to see
+        # if they should even attempt to gather facts. If the module is
+        # not provisioned, then it is likely that the REST API will not
+        # return valid data.
+        #
+        # For example, ASM (at the time of this writing 13.x/14.x) will
+        # raise an exception if you attempt to query its APIs if it is
+        # not provisioned. An example error message is shown below.
+        #
+        #  {
+        #    "code": 400,
+        #    "message": "java.net.ConnectException: Connection refused (Connection refused)",
+        #    "referer": "172.18.43.40",
+        #    "restOperationId": 18164160,
+        #    "kind": ":resterrorresponse"
+        #  }
+        #
+        # This list is provided to the specific fact manager by the
+        # master ModuleManager of this module.
+        self.provisioned_modules = []
 
     def exec_module(self):
         results = []
@@ -5493,21 +6554,11 @@ class Parameters(AnsibleF5Parameters):
 class BaseParameters(Parameters):
     @property
     def enabled(self):
-        if self._values['enabled'] is None:
-            return None
-        elif self._values['enabled'] in BOOLEANS_TRUE:
-            return True
-        else:
-            return False
+        return flatten_boolean(self._values['enabled'])
 
     @property
     def disabled(self):
-        if self._values['disabled'] is None:
-            return None
-        elif self._values['disabled'] in BOOLEANS_TRUE:
-            return True
-        else:
-            return False
+        return flatten_boolean(self._values['disabled'])
 
     def _remove_internal_keywords(self, resource):
         resource.pop('kind', None)
@@ -5581,6 +6632,8 @@ class AsmPolicyStatsFactManager(BaseManager):
         return result
 
     def _exec_module(self):
+        if 'asm' not in self.provisioned_modules:
+            return []
         facts = self.read_facts()
         results = facts.to_return()
         return results
@@ -5605,10 +6658,658 @@ class AsmPolicyStatsFactManager(BaseManager):
                 raise F5ModuleError(response['message'])
             else:
                 raise F5ModuleError(resp.content)
-
         return dict(
             policies=response['items']
         )
+
+
+class AsmPolicyFactParameters(BaseParameters):
+    api_map = {
+        'hasParent': 'has_parent',
+        'protocolIndependent': 'protocol_independent',
+        'virtualServers': 'virtual_servers',
+        'allowedResponseCodes': 'allowed_response_codes',
+        'learningMode': 'learning_mode',
+        'enforcementMode': 'enforcement_mode',
+        'customXffHeaders': 'custom_xff_headers',
+        'caseInsensitive': 'case_insensitive',
+        'stagingSettings': 'staging_settings',
+        'applicationLanguage': 'application_language',
+        'trustXff': 'trust_xff',
+        'geolocation-enforcement': 'geolocation_enforcement',
+        'disallowedLocations': 'disallowed_locations',
+        'signature-settings': 'signature_settings',
+        'header-settings': 'header_settings',
+        'cookie-settings': 'cookie_settings',
+        'policy-builder': 'policy_builder',
+        'disallowed-geolocations': 'disallowed_geolocations',
+        'whitelist-ips': 'whitelist_ips',
+        'fullPath': 'full_path',
+        'csrf-protection': 'csrf_protection',
+    }
+
+    returnables = [
+        'full_path',
+        'name',
+        'policy_id',
+        'active',
+        'protocol_independent',
+        'has_parent',
+        'type',
+        'virtual_servers',
+        'allowed_response_codes',
+        'description',
+        'learning_mode',
+        'enforcement_mode',
+        'custom_xff_headers',
+        'case_insensitive',
+        'signature_staging',
+        'place_signatures_in_staging',
+        'enforcement_readiness_period',
+        'path_parameter_handling',
+        'trigger_asm_irule_event',
+        'inspect_http_uploads',
+        'mask_credit_card_numbers_in_request',
+        'maximum_http_header_length',
+        'use_dynamic_session_id_in_url',
+        'maximum_cookie_header_length',
+        'application_language',
+        'trust_xff',
+        'disallowed_geolocations',
+        'csrf_urls',
+        'csrf_protection_enabled',
+        'csrf_protection_ssl_only',
+        'csrf_protection_expiration_time_in_seconds',
+    ]
+
+    def _morph_keys(self, key_map, item):
+        for k, v in iteritems(key_map):
+            item[v] = item.pop(k, None)
+        result = self._filter_params(item)
+        return result
+
+    @property
+    def active(self):
+        return flatten_boolean(self._values['active'])
+
+    @property
+    def case_insensitive(self):
+        return flatten_boolean(self._values['case_insensitive'])
+
+    @property
+    def has_parent(self):
+        return flatten_boolean(self._values['has_parent'])
+
+    @property
+    def policy_id(self):
+        if self._values['id'] is None:
+            return None
+        return self._values['id']
+
+    @property
+    def signature_staging(self):
+        if 'staging_settings' in self._values:
+            if self._values['staging_settings'] is None:
+                return None
+            if 'signatureStaging' in self._values['staging_settings']:
+                return flatten_boolean(self._values['staging_settings']['signatureStaging'])
+        if 'signature_settings' in self._values:
+            if self._values['signature_settings'] is None:
+                return None
+            if 'signatureStaging' in self._values['signature_settings']:
+                return flatten_boolean(self._values['signature_settings']['signatureStaging'])
+
+    @property
+    def place_signatures_in_staging(self):
+        if 'staging_settings' in self._values:
+            if self._values['staging_settings'] is None:
+                return None
+            if 'placeSignaturesInStaging' in self._values['staging_settings']:
+                return flatten_boolean(self._values['staging_settings']['placeSignaturesInStaging'])
+        if 'signature_settings' in self._values:
+            if self._values['signature_settings'] is None:
+                return None
+            if 'signatureStaging' in self._values['signature_settings']:
+                return flatten_boolean(self._values['signature_settings']['placeSignaturesInStaging'])
+
+    @property
+    def enforcement_readiness_period(self):
+        if 'staging_settings' in self._values:
+            if self._values['staging_settings'] is None:
+                return None
+            if 'enforcementReadinessPeriod' in self._values['staging_settings']:
+                return self._values['staging_settings']['enforcementReadinessPeriod']
+        if 'general' in self._values:
+            if self._values['general'] is None:
+                return None
+            if 'signatureStaging' in self._values['general']:
+                return self._values['general']['enforcementReadinessPeriod']
+
+    @property
+    def path_parameter_handling(self):
+        if 'attributes' in self._values:
+            if self._values['attributes'] is None:
+                return None
+            if 'pathParameterHandling' in self._values['attributes']:
+                return self._values['attributes']['pathParameterHandling']
+        if 'general' in self._values:
+            if self._values['general'] is None:
+                return None
+            if 'pathParameterHandling' in self._values['general']:
+                return self._values['general']['pathParameterHandling']
+
+    @property
+    def trigger_asm_irule_event(self):
+        if 'attributes' in self._values:
+            if self._values['attributes'] is None:
+                return None
+            if 'triggerAsmIruleEvent' in self._values['attributes']:
+                return self._values['attributes']['triggerAsmIruleEvent']
+        if 'general' in self._values:
+            if self._values['general'] is None:
+                return None
+            if 'triggerAsmIruleEvent' in self._values['general']:
+                return self._values['general']['triggerAsmIruleEvent']
+
+    @property
+    def inspect_http_uploads(self):
+        if 'attributes' in self._values:
+            if self._values['attributes'] is None:
+                return None
+            if 'inspectHttpUploads' in self._values['attributes']:
+                return flatten_boolean(self._values['attributes']['inspectHttpUploads'])
+        if 'antivirus' in self._values:
+            if self._values['antivirus'] is None:
+                return None
+            if 'inspectHttpUploads' in self._values['antivirus']:
+                return flatten_boolean(self._values['antivirus']['inspectHttpUploads'])
+
+    @property
+    def mask_credit_card_numbers_in_request(self):
+        if 'attributes' in self._values:
+            if self._values['attributes'] is None:
+                return None
+            if 'maskCreditCardNumbersInRequest' in self._values['attributes']:
+                return flatten_boolean(self._values['attributes']['maskCreditCardNumbersInRequest'])
+        if 'general' in self._values:
+            if self._values['general'] is None:
+                return None
+            if 'maskCreditCardNumbersInRequest' in self._values['general']:
+                return flatten_boolean(self._values['general']['maskCreditCardNumbersInRequest'])
+
+    @property
+    def maximum_http_header_length(self):
+        if 'attributes' in self._values:
+            if self._values['attributes'] is None:
+                return None
+            if 'maximumHttpHeaderLength' in self._values['attributes']:
+                if self._values['attributes']['maximumHttpHeaderLength'] == 'any':
+                    return 'any'
+                return int(self._values['attributes']['maximumHttpHeaderLength'])
+
+        if 'header_settings' in self._values:
+            if self._values['header_settings'] is None:
+                return None
+            if 'maximumHttpHeaderLength' in self._values['header_settings']:
+                if self._values['header_settings']['maximumHttpHeaderLength'] == 'any':
+                    return 'any'
+                return int(self._values['header_settings']['maximumHttpHeaderLength'])
+
+    @property
+    def use_dynamic_session_id_in_url(self):
+        if 'attributes' in self._values:
+            if self._values['attributes'] is None:
+                return None
+            if 'useDynamicSessionIdInUrl' in self._values['attributes']:
+                return flatten_boolean(self._values['attributes']['useDynamicSessionIdInUrl'])
+        if 'general' in self._values:
+            if self._values['general'] is None:
+                return None
+            if 'useDynamicSessionIdInUrl' in self._values['general']:
+                return flatten_boolean(self._values['general']['useDynamicSessionIdInUrl'])
+
+    @property
+    def maximum_cookie_header_length(self):
+        if 'attributes' in self._values:
+            if self._values['attributes'] is None:
+                return None
+            if 'maximumCookieHeaderLength' in self._values['attributes']:
+                if self._values['attributes']['maximumCookieHeaderLength'] == 'any':
+                    return 'any'
+                return int(self._values['attributes']['maximumCookieHeaderLength'])
+        if 'cookie_settings' in self._values:
+            if self._values['cookie_settings'] is None:
+                return None
+            if 'maximumCookieHeaderLength' in self._values['cookie_settings']:
+                if self._values['cookie_settings']['maximumCookieHeaderLength'] == 'any':
+                    return 'any'
+                return int(self._values['cookie_settings']['maximumCookieHeaderLength'])
+
+    @property
+    def trust_xff(self):
+        if 'trust_xff' in self._values:
+            if self._values['trust_xff'] is None:
+                return None
+            return flatten_boolean(self._values['trust_xff'])
+        if 'general' in self._values:
+            if self._values['general'] is None:
+                return None
+            if 'trustXff' in self._values['general']:
+                return flatten_boolean(self._values['general']['trustXff'])
+
+    @property
+    def custom_xff_headers(self):
+        if 'custom_xff_headers' in self._values:
+            if self._values['custom_xff_headers'] is None:
+                return None
+            return self._values['custom_xff_headers']
+        if 'general' in self._values:
+            if self._values['general'] is None:
+                return None
+            if 'customXffHeaders' in self._values['general']:
+                return self._values['general']['customXffHeaders']
+
+    @property
+    def allowed_response_codes(self):
+        if 'allowed_response_codes' in self._values:
+            if self._values['allowed_response_codes'] is None:
+                return None
+            return self._values['allowed_response_codes']
+        if 'general' in self._values:
+            if self._values['general'] is None:
+                return None
+            if 'allowedResponseCodes' in self._values['general']:
+                return self._values['general']['allowedResponseCodes']
+
+    @property
+    def learning_mode(self):
+        if 'policy_builder' in self._values:
+            if self._values['policy_builder'] is None:
+                return None
+            if 'learningMode' in self._values['policy_builder']:
+                return self._values['policy_builder']['learningMode']
+
+    @property
+    def disallowed_locations(self):
+        if 'geolocation_enforcement' in self._values:
+            if self._values['geolocation_enforcement'] is None:
+                return None
+            return self._values['geolocation_enforcement']['disallowedLocations']
+
+    @property
+    def disallowed_geolocations(self):
+        if 'disallowed_geolocations' in self._values:
+            if self._values['disallowed_geolocations'] is None:
+                return None
+            return self._values['disallowed_geolocations']
+
+    @property
+    def csrf_protection_enabled(self):
+        if 'csrf_protection' in self._values:
+            return flatten_boolean(self._values['csrf_protection']['enabled'])
+
+    @property
+    def csrf_protection_ssl_only(self):
+        if 'csrf_protection' in self._values:
+            if 'sslOnly' in self._values['csrf_protection']:
+                return flatten_boolean(self._values['csrf_protection']['sslOnly'])
+
+    @property
+    def csrf_protection_expiration_time_in_seconds(self):
+        if 'csrf_protection' in self._values:
+            if 'expirationTimeInSeconds' in self._values['csrf_protection']:
+                if self._values['csrf_protection']['expirationTimeInSeconds'] is None:
+                    return None
+                if self._values['csrf_protection']['expirationTimeInSeconds'] == 'disabled':
+                    return 'disabled'
+                return int(self._values['csrf_protection']['expirationTimeInSeconds'])
+
+    def format_csrf_collection(self, items):
+        result = list()
+        key_map = {
+            'requiredParameters': 'csrf_url_required_parameters',
+            'url': 'csrf_url',
+            'method': 'csrf_url_method',
+            'enforcementAction': 'csrf_url_enforcement_action',
+            'id': 'csrf_url_id',
+            'wildcardOrder': 'csrf_url_wildcard_order',
+            'parametersList': 'csrf_url_parameters_list'
+        }
+        for item in items:
+            self._remove_internal_keywords(item)
+            item.pop('lastUpdateMicros')
+            output = self._morph_keys(key_map, item)
+            result.append(output)
+        return result
+
+    @property
+    def csrf_urls(self):
+        if 'csrfUrls' in self._values:
+            if self._values['csrfUrls'] is None:
+                return None
+            return self._values['csrfUrls']
+        if 'csrf-urls' in self._values:
+            if self._values['csrf-urls'] is None:
+                return None
+            return self.format_csrf_collection(self._values['csrf-urls'])
+
+    @property
+    def protocol_independent(self):
+        return flatten_boolean(self._values['protocol_independent'])
+
+
+# TODO include: web-scraping,ip-intelligence,session-tracking,
+# TODO login-enforcement,data-guard,redirection-protection,vulnerability-assessment, parentPolicyReference
+
+
+class AsmPolicyFactManager(BaseManager):
+    def __init__(self, *args, **kwargs):
+        self.client = kwargs.get('client', None)
+        self.module = kwargs.get('module', None)
+        super(AsmPolicyFactManager, self).__init__(**kwargs)
+        self.want = AsmPolicyFactParameters(params=self.module.params)
+
+    def exec_module(self):
+        facts = self._exec_module()
+        result = dict(asm_policies=facts)
+        return result
+
+    def _exec_module(self):
+        if 'asm' not in self.provisioned_modules:
+            return []
+        manager = self.get_manager()
+        return manager._exec_module()
+
+    def get_manager(self):
+        if self.version_is_less_than_13():
+            return AsmPolicyFactManagerV12(**self.kwargs)
+        else:
+            return AsmPolicyFactManagerV13(**self.kwargs)
+
+    def version_is_less_than_13(self):
+        version = tmos_version(self.client)
+        if LooseVersion(version) < LooseVersion('13.0.0'):
+            return True
+        else:
+            return False
+
+    def read_facts(self):
+        results = []
+        collection = self.increment_read()
+        for resource in collection:
+            params = AsmPolicyFactParameters(params=resource)
+            results.append(params)
+        return results
+
+    def increment_read(self):
+        n = 0
+        result = []
+        while True:
+            items = self.read_collection_from_device(skip=n)
+            if not items:
+                break
+            result.extend(items)
+            n = n + 10
+        return result
+
+
+class AsmPolicyFactManagerV12(AsmPolicyFactManager):
+    def _exec_module(self):
+        results = []
+        facts = self.read_facts()
+        for item in facts:
+            attrs = item.to_return()
+            results.append(attrs)
+        results = sorted(results, key=lambda k: k['full_path'])
+        return results
+
+    def read_collection_from_device(self, skip=0):
+        uri = "https://{0}:{1}/mgmt/tm/asm/policies".format(
+            self.client.provider['server'],
+            self.client.provider['server_port'],
+        )
+
+        to_expand = 'policy-builder,geolocation-enforcement,csrf-protection'
+        query = '?$top=10&$skip={0}&$expand={1}'.format(skip, to_expand)
+
+        resp = self.client.api.get(uri + query)
+
+        try:
+            response = resp.json()
+        except ValueError as ex:
+            raise F5ModuleError(str(ex))
+
+        if 'code' in response and response['code'] == 400:
+            if 'message' in response:
+                raise F5ModuleError(response['message'])
+            else:
+                raise F5ModuleError(resp.content)
+
+        if 'items' not in response:
+            return None
+        return response['items']
+
+
+class AsmPolicyFactManagerV13(AsmPolicyFactManager):
+    def _exec_module(self):
+        results = []
+        facts = self.read_facts()
+        for item in facts:
+            attrs = item.to_return()
+            results.append(attrs)
+        results = sorted(results, key=lambda k: k['full_path'])
+        return results
+
+    def read_collection_from_device(self, skip=0):
+        uri = "https://{0}:{1}/mgmt/tm/asm/policies".format(
+            self.client.provider['server'],
+            self.client.provider['server_port'],
+        )
+        to_expand = 'general,signature-settings,header-settings,cookie-settings,antivirus,' \
+                    'policy-builder,csrf-protection,csrf-urls'
+        query = '?$top=10&$skip={0}&$expand={1}'.format(skip, to_expand)
+        resp = self.client.api.get(uri + query)
+
+        try:
+            response = resp.json()
+        except ValueError as ex:
+            raise F5ModuleError(str(ex))
+
+        if 'code' in response and response['code'] == 400:
+            if 'message' in response:
+                raise F5ModuleError(response['message'])
+            else:
+                raise F5ModuleError(resp.content)
+
+        if 'items' not in response:
+            return None
+
+        return response['items']
+
+
+class AsmServerTechnologyFactParameters(BaseParameters):
+    api_map = {
+        'serverTechnologyName': 'server_technology_name',
+        'serverTechnologyReferences': 'server_technology_references',
+    }
+
+    returnables = [
+        'id',
+        'server_technology_name',
+        'server_technology_references',
+    ]
+
+
+class AsmServerTechnologyFactManager(BaseManager):
+    def __init__(self, *args, **kwargs):
+        self.client = kwargs.get('client', None)
+        self.module = kwargs.get('module', None)
+        super(AsmServerTechnologyFactManager, self).__init__(**kwargs)
+        self.want = AsmServerTechnologyFactParameters(params=self.module.params)
+
+    def exec_module(self):
+        facts = self._exec_module()
+        result = dict(asm_server_technologies=facts)
+        return result
+
+    def _exec_module(self):
+        results = []
+        if 'asm' not in self.provisioned_modules:
+            return results
+        if self.version_is_less_than_13():
+            return results
+        facts = self.read_facts()
+        for item in facts:
+            attrs = item.to_return()
+            results.append(attrs)
+        results = sorted(results, key=lambda k: k['server_technology_name'])
+        return results
+
+    def version_is_less_than_13(self):
+        version = tmos_version(self.client)
+        if LooseVersion(version) < LooseVersion('13.0.0'):
+            return True
+        else:
+            return False
+
+    def read_facts(self):
+        results = []
+        collection = self.read_collection_from_device()
+        for resource in collection:
+            params = AsmServerTechnologyFactParameters(params=resource)
+            results.append(params)
+        return results
+
+    def read_collection_from_device(self):
+        uri = "https://{0}:{1}/mgmt/tm/asm/server-technologies".format(
+            self.client.provider['server'],
+            self.client.provider['server_port'],
+        )
+        resp = self.client.api.get(uri)
+        try:
+            response = resp.json()
+        except ValueError as ex:
+            raise F5ModuleError(str(ex))
+        if 'code' in response and response['code'] == 400:
+            if 'message' in response:
+                raise F5ModuleError(response['message'])
+            else:
+                raise F5ModuleError(resp.content)
+        if 'items' not in response:
+            return []
+        result = response['items']
+        return result
+
+
+class AsmSignatureSetsFactParameters(BaseParameters):
+    api_map = {
+        'isUserDefined': 'is_user_defined',
+        'assignToPolicyByDefault': 'assign_to_policy_by_default',
+        'defaultAlarm': 'default_alarm',
+        'defaultBlock': 'default_block',
+        'defaultLearn': 'default_learn',
+    }
+
+    returnables = [
+        'name',
+        'id',
+        'type',
+        'category',
+        'is_user_defined',
+        'assign_to_policy_by_default',
+        'default_alarm',
+        'default_block',
+        'default_learn',
+    ]
+
+    @property
+    def is_user_defined(self):
+        return flatten_boolean(self._values['is_user_defined'])
+
+    @property
+    def assign_to_policy_by_default(self):
+        return flatten_boolean(self._values['assign_to_policy_by_default'])
+
+    @property
+    def default_alarm(self):
+        return flatten_boolean(self._values['default_alarm'])
+
+    @property
+    def default_block(self):
+        return flatten_boolean(self._values['default_block'])
+
+    @property
+    def default_learn(self):
+        return flatten_boolean(self._values['default_learn'])
+
+# TODO: add the following: filter, systems, signatureReferences
+
+
+class AsmSignatureSetsFactManager(BaseManager):
+    def __init__(self, *args, **kwargs):
+        self.client = kwargs.get('client', None)
+        self.module = kwargs.get('module', None)
+        super(AsmSignatureSetsFactManager, self).__init__(**kwargs)
+        self.want = AsmSignatureSetsFactParameters(params=self.module.params)
+
+    def exec_module(self):
+        facts = self._exec_module()
+        result = dict(asm_signature_sets=facts)
+        return result
+
+    def _exec_module(self):
+        results = []
+        if 'asm' not in self.provisioned_modules:
+            return results
+        facts = self.read_facts()
+        for item in facts:
+            attrs = item.to_return()
+            results.append(attrs)
+        results = sorted(results, key=lambda k: k['name'])
+        return results
+
+    def read_facts(self):
+        results = []
+        collection = self.increment_read()
+        for resource in collection:
+            params = AsmSignatureSetsFactParameters(params=resource)
+            results.append(params)
+        return results
+
+    def increment_read(self):
+        n = 0
+        result = []
+        while True:
+            items = self.read_collection_from_device(skip=n)
+            if not items:
+                break
+            result.extend(items)
+            n = n + 5
+        return result
+
+    def read_collection_from_device(self, skip=0):
+        uri = "https://{0}:{1}/mgmt/tm/asm/signature-sets".format(
+            self.client.provider['server'],
+            self.client.provider['server_port'],
+        )
+        query = '?$top=5&$skip={0}'.format(skip)
+        resp = self.client.api.get(uri + query)
+
+        try:
+            response = resp.json()
+        except ValueError as ex:
+            raise F5ModuleError(str(ex))
+
+        if 'code' in response and response['code'] == 400:
+            if 'message' in response:
+                raise F5ModuleError(response['message'])
+            else:
+                raise F5ModuleError(resp.content)
+
+        if 'items' not in response:
+            return None
+
+        return response['items']
 
 
 class ClientSslProfilesParameters(BaseParameters):
@@ -5896,12 +7597,28 @@ class ClientSslProfilesFactManager(BaseManager):
         results = []
         collection = self.read_collection_from_device()
         for resource in collection:
-            params = ClientSslProfilesParameters(params=resource.attrs)
+            params = ClientSslProfilesParameters(params=resource)
             results.append(params)
         return results
 
     def read_collection_from_device(self):
-        result = self.client.api.tm.ltm.profile.client_ssls.get_collection()
+        uri = "https://{0}:{1}/mgmt/tm/ltm/profile/client-ssl".format(
+            self.client.provider['server'],
+            self.client.provider['server_port'],
+        )
+        resp = self.client.api.get(uri)
+        try:
+            response = resp.json()
+        except ValueError as ex:
+            raise F5ModuleError(str(ex))
+        if 'code' in response and response['code'] == 400:
+            if 'message' in response:
+                raise F5ModuleError(response['message'])
+            else:
+                raise F5ModuleError(resp.content)
+        if 'items' not in response:
+            return []
+        result = response['items']
         return result
 
 
@@ -5995,16 +7712,28 @@ class DeviceGroupsFactManager(BaseManager):
         results = []
         collection = self.read_collection_from_device()
         for resource in collection:
-            params = DeviceGroupsParameters(params=resource.attrs)
+            params = DeviceGroupsParameters(params=resource)
             results.append(params)
         return results
 
     def read_collection_from_device(self):
-        result = self.client.api.tm.cm.device_groups.get_collection(
-            requests_params=dict(
-                params='expandSubcollections=true'
-            )
+        uri = "https://{0}:{1}/mgmt/tm/cm/device-group/?expandSubcollections=true".format(
+            self.client.provider['server'],
+            self.client.provider['server_port'],
         )
+        resp = self.client.api.get(uri)
+        try:
+            response = resp.json()
+        except ValueError as ex:
+            raise F5ModuleError(str(ex))
+        if 'code' in response and response['code'] == 400:
+            if 'message' in response:
+                raise F5ModuleError(response['message'])
+            else:
+                raise F5ModuleError(resp.content)
+        if 'items' not in response:
+            return []
+        result = response['items']
         return result
 
 
@@ -6142,12 +7871,28 @@ class DevicesFactManager(BaseManager):
         results = []
         collection = self.read_collection_from_device()
         for resource in collection:
-            params = DevicesParameters(params=resource.attrs)
+            params = DevicesParameters(params=resource)
             results.append(params)
         return results
 
     def read_collection_from_device(self):
-        result = self.client.api.tm.cm.devices.get_collection()
+        uri = "https://{0}:{1}/mgmt/tm/cm/device".format(
+            self.client.provider['server'],
+            self.client.provider['server_port'],
+        )
+        resp = self.client.api.get(uri)
+        try:
+            response = resp.json()
+        except ValueError as ex:
+            raise F5ModuleError(str(ex))
+        if 'code' in response and response['code'] == 400:
+            if 'message' in response:
+                raise F5ModuleError(response['message'])
+            else:
+                raise F5ModuleError(resp.content)
+        if 'items' not in response:
+            return []
+        result = response['items']
         return result
 
 
@@ -6247,6 +7992,8 @@ class ExternalMonitorsFactManager(BaseManager):
                 raise F5ModuleError(response['message'])
             else:
                 raise F5ModuleError(resp.content)
+        if 'items' not in response:
+            return []
         result = response['items']
         return result
 
@@ -6376,12 +8123,28 @@ class FastHttpProfilesFactManager(BaseManager):
         results = []
         collection = self.read_collection_from_device()
         for resource in collection:
-            params = FastHttpProfilesParameters(params=resource.attrs)
+            params = FastHttpProfilesParameters(params=resource)
             results.append(params)
         return results
 
     def read_collection_from_device(self):
-        result = self.client.api.tm.ltm.profile.fasthttps.get_collection()
+        uri = "https://{0}:{1}/mgmt/tm/ltm/profile/fasthttp".format(
+            self.client.provider['server'],
+            self.client.provider['server_port'],
+        )
+        resp = self.client.api.get(uri)
+        try:
+            response = resp.json()
+        except ValueError as ex:
+            raise F5ModuleError(str(ex))
+        if 'code' in response and response['code'] == 400:
+            if 'message' in response:
+                raise F5ModuleError(response['message'])
+            else:
+                raise F5ModuleError(resp.content)
+        if 'items' not in response:
+            return []
+        result = response['items']
         return result
 
 
@@ -6707,6 +8470,8 @@ class FastL4ProfilesFactManager(BaseManager):
                 raise F5ModuleError(response['message'])
             else:
                 raise F5ModuleError(resp.content)
+        if 'items' not in response:
+            return []
         result = response['items']
         return result
 
@@ -6806,6 +8571,1149 @@ class GatewayIcmpMonitorsFactManager(BaseManager):
                 raise F5ModuleError(response['message'])
             else:
                 raise F5ModuleError(resp.content)
+        if 'items' not in response:
+            return []
+        result = response['items']
+        return result
+
+
+class GtmXPoolsParameters(BaseParameters):
+    api_map = {
+        'alternateMode': 'alternate_mode',
+        'dynamicRatio': 'dynamic_ratio',
+        'fallbackMode': 'fallback_mode',
+        'fullPath': 'full_path',
+        'loadBalancingMode': 'load_balancing_mode',
+        'manualResume': 'manual_resume',
+        'maxAnswersReturned': 'max_answers_returned',
+        'qosHitRatio': 'qos_hit_ratio',
+        'qosHops': 'qos_hops',
+        'qosKilobytesSecond': 'qos_kilobytes_second',
+        'qosLcs': 'qos_lcs',
+        'qosPacketRate': 'qos_packet_rate',
+        'qosRtt': 'qos_rtt',
+        'qosTopology': 'qos_topology',
+        'qosVsCapacity': 'qos_vs_capacity',
+        'qosVsScore': 'qos_vs_score',
+        'verifyMemberAvailability': 'verify_member_availability',
+        'membersReference': 'members'
+    }
+
+    returnables = [
+        'alternate_mode',
+        'dynamic_ratio',
+        'enabled',
+        'disabled',
+        'fallback_mode',
+        'full_path',
+        'load_balancing_mode',
+        'manual_resume',
+        'max_answers_returned',
+        'members',
+        'name',
+        'partition',
+        'qos_hit_ratio',
+        'qos_hops',
+        'qos_kilobytes_second',
+        'qos_lcs',
+        'qos_packet_rate',
+        'qos_rtt',
+        'qos_topology',
+        'qos_vs_capacity',
+        'qos_vs_score',
+        'ttl',
+        'verify_member_availability',
+    ]
+
+    @property
+    def verify_member_availability(self):
+        return flatten_boolean(self._values['verify_member_availability'])
+
+    @property
+    def dynamic_ratio(self):
+        return flatten_boolean(self._values['dynamic_ratio'])
+
+    @property
+    def max_answers_returned(self):
+        if self._values['max_answers_returned'] is None:
+            return None
+        return int(self._values['max_answers_returned'])
+
+    @property
+    def members(self):
+        result = []
+        if self._values['members'] is None or 'items' not in self._values['members']:
+            return result
+        for item in self._values['members']['items']:
+            self._remove_internal_keywords(item)
+            if 'disabled' in item:
+                item['disabled'] = flatten_boolean(item['disabled'])
+                item['enabled'] = flatten_boolean(not item['disabled'])
+            if 'enabled' in item:
+                item['enabled'] = flatten_boolean(item['enabled'])
+                item['disabled'] = flatten_boolean(not item['enabled'])
+            if 'fullPath' in item:
+                item['full_path'] = item.pop('fullPath')
+            if 'memberOrder' in item:
+                item['member_order'] = int(item.pop('memberOrder'))
+            # Cast some attributes to integer
+            for x in ['order', 'preference', 'ratio', 'service']:
+                if x in item:
+                    item[x] = int(item[x])
+            result.append(item)
+        return result
+
+    @property
+    def qos_hit_ratio(self):
+        if self._values['qos_hit_ratio'] is None:
+            return None
+        return int(self._values['qos_hit_ratio'])
+
+    @property
+    def qos_hops(self):
+        if self._values['qos_hops'] is None:
+            return None
+        return int(self._values['qos_hops'])
+
+    @property
+    def qos_kilobytes_second(self):
+        if self._values['qos_kilobytes_second'] is None:
+            return None
+        return int(self._values['qos_kilobytes_second'])
+
+    @property
+    def qos_lcs(self):
+        if self._values['qos_lcs'] is None:
+            return None
+        return int(self._values['qos_lcs'])
+
+    @property
+    def qos_packet_rate(self):
+        if self._values['qos_packet_rate'] is None:
+            return None
+        return int(self._values['qos_packet_rate'])
+
+    @property
+    def qos_rtt(self):
+        if self._values['qos_rtt'] is None:
+            return None
+        return int(self._values['qos_rtt'])
+
+    @property
+    def qos_topology(self):
+        if self._values['qos_topology'] is None:
+            return None
+        return int(self._values['qos_topology'])
+
+    @property
+    def qos_vs_capacity(self):
+        if self._values['qos_vs_capacity'] is None:
+            return None
+        return int(self._values['qos_vs_capacity'])
+
+    @property
+    def qos_vs_score(self):
+        if self._values['qos_vs_score'] is None:
+            return None
+        return int(self._values['qos_vs_score'])
+
+    @property
+    def availability_state(self):
+        if self._values['stats'] is None:
+            return None
+        try:
+            result = self._values['stats']['status']['availabilityState']
+            return result['description']
+        except AttributeError:
+            return None
+
+    @property
+    def enabled_state(self):
+        if self._values['stats'] is None:
+            return None
+        try:
+            result = self._values['stats']['status']['enabledState']
+            return result['description']
+        except AttributeError:
+            return None
+
+    @property
+    def availability_status(self):
+        # This fact is a combination of the availability_state and enabled_state
+        #
+        # The purpose of the fact is to give a higher-level view of the availability
+        # of the pool, that can be used in playbooks. If you need further detail,
+        # consider using the following facts together.
+        #
+        # - availability_state
+        # - enabled_state
+        #
+        if self.enabled_state == 'enabled':
+            if self.availability_state == 'offline':
+                return 'red'
+            elif self.availability_state == 'available':
+                return 'green'
+            elif self.availability_state == 'unknown':
+                return 'blue'
+            else:
+                return 'none'
+        else:
+            # disabled
+            return 'black'
+
+    @property
+    def manual_resume(self):
+        return flatten_boolean(self._values['manual_resume'])
+
+
+class GtmAPoolsFactManager(BaseManager):
+    def __init__(self, *args, **kwargs):
+        self.client = kwargs.get('client', None)
+        self.module = kwargs.get('module', None)
+        super(GtmAPoolsFactManager, self).__init__(**kwargs)
+        self.want = GtmXPoolsParameters(params=self.module.params)
+
+    def exec_module(self):
+        facts = self._exec_module()
+        result = dict(gtm_a_pools=facts)
+        return result
+
+    def _exec_module(self):
+        if 'gtm' not in self.provisioned_modules:
+            return []
+        results = []
+        facts = self.read_facts()
+        for item in facts:
+            attrs = item.to_return()
+            results.append(attrs)
+        results = sorted(results, key=lambda k: k['full_path'])
+        return results
+
+    def read_facts(self):
+        results = []
+        collection = self.read_collection_from_device()
+        for resource in collection:
+            params = GtmXPoolsParameters(params=resource)
+            results.append(params)
+        return results
+
+    def read_collection_from_device(self):
+        uri = "https://{0}:{1}/mgmt/tm/gtm/pool/a".format(
+            self.client.provider['server'],
+            self.client.provider['server_port'],
+        )
+        resp = self.client.api.get(uri)
+        try:
+            response = resp.json()
+        except ValueError as ex:
+            raise F5ModuleError(str(ex))
+        if 'code' in response and response['code'] == 400:
+            if 'message' in response:
+                raise F5ModuleError(response['message'])
+            else:
+                raise F5ModuleError(resp.content)
+        if 'items' not in response:
+            return []
+        result = response['items']
+        return result
+
+
+class GtmAaaaPoolsFactManager(BaseManager):
+    def __init__(self, *args, **kwargs):
+        self.client = kwargs.get('client', None)
+        self.module = kwargs.get('module', None)
+        super(GtmAaaaPoolsFactManager, self).__init__(**kwargs)
+        self.want = GtmXPoolsParameters(params=self.module.params)
+
+    def exec_module(self):
+        facts = self._exec_module()
+        result = dict(gtm_aaaa_pools=facts)
+        return result
+
+    def _exec_module(self):
+        if 'gtm' not in self.provisioned_modules:
+            return []
+        results = []
+        facts = self.read_facts()
+        for item in facts:
+            attrs = item.to_return()
+            results.append(attrs)
+        results = sorted(results, key=lambda k: k['full_path'])
+        return results
+
+    def read_facts(self):
+        results = []
+        collection = self.read_collection_from_device()
+        for resource in collection:
+            params = GtmXPoolsParameters(params=resource)
+            results.append(params)
+        return results
+
+    def read_collection_from_device(self):
+        uri = "https://{0}:{1}/mgmt/tm/gtm/pool/aaaa".format(
+            self.client.provider['server'],
+            self.client.provider['server_port'],
+        )
+        resp = self.client.api.get(uri)
+        try:
+            response = resp.json()
+        except ValueError as ex:
+            raise F5ModuleError(str(ex))
+        if 'code' in response and response['code'] == 400:
+            if 'message' in response:
+                raise F5ModuleError(response['message'])
+            else:
+                raise F5ModuleError(resp.content)
+        if 'items' not in response:
+            return []
+        result = response['items']
+        return result
+
+
+class GtmCnamePoolsFactManager(BaseManager):
+    def __init__(self, *args, **kwargs):
+        self.client = kwargs.get('client', None)
+        self.module = kwargs.get('module', None)
+        super(GtmCnamePoolsFactManager, self).__init__(**kwargs)
+        self.want = GtmXPoolsParameters(params=self.module.params)
+
+    def exec_module(self):
+        facts = self._exec_module()
+        result = dict(gtm_cname_pools=facts)
+        return result
+
+    def _exec_module(self):
+        if 'gtm' not in self.provisioned_modules:
+            return []
+        results = []
+        facts = self.read_facts()
+        for item in facts:
+            attrs = item.to_return()
+            results.append(attrs)
+        results = sorted(results, key=lambda k: k['full_path'])
+        return results
+
+    def read_facts(self):
+        results = []
+        collection = self.read_collection_from_device()
+        for resource in collection:
+            params = GtmXPoolsParameters(params=resource)
+            results.append(params)
+        return results
+
+    def read_collection_from_device(self):
+        uri = "https://{0}:{1}/mgmt/tm/gtm/pool/cname".format(
+            self.client.provider['server'],
+            self.client.provider['server_port'],
+        )
+        resp = self.client.api.get(uri)
+        try:
+            response = resp.json()
+        except ValueError as ex:
+            raise F5ModuleError(str(ex))
+        if 'code' in response and response['code'] == 400:
+            if 'message' in response:
+                raise F5ModuleError(response['message'])
+            else:
+                raise F5ModuleError(resp.content)
+        if 'items' not in response:
+            return []
+        result = response['items']
+        return result
+
+
+class GtmMxPoolsFactManager(BaseManager):
+    def __init__(self, *args, **kwargs):
+        self.client = kwargs.get('client', None)
+        self.module = kwargs.get('module', None)
+        super(GtmMxPoolsFactManager, self).__init__(**kwargs)
+        self.want = GtmXPoolsParameters(params=self.module.params)
+
+    def exec_module(self):
+        facts = self._exec_module()
+        result = dict(gtm_mx_pools=facts)
+        return result
+
+    def _exec_module(self):
+        if 'gtm' not in self.provisioned_modules:
+            return []
+        results = []
+        facts = self.read_facts()
+        for item in facts:
+            attrs = item.to_return()
+            results.append(attrs)
+        results = sorted(results, key=lambda k: k['full_path'])
+        return results
+
+    def read_facts(self):
+        results = []
+        collection = self.read_collection_from_device()
+        for resource in collection:
+            params = GtmXPoolsParameters(params=resource)
+            results.append(params)
+        return results
+
+    def read_collection_from_device(self):
+        uri = "https://{0}:{1}/mgmt/tm/gtm/pool/mx".format(
+            self.client.provider['server'],
+            self.client.provider['server_port'],
+        )
+        resp = self.client.api.get(uri)
+        try:
+            response = resp.json()
+        except ValueError as ex:
+            raise F5ModuleError(str(ex))
+        if 'code' in response and response['code'] == 400:
+            if 'message' in response:
+                raise F5ModuleError(response['message'])
+            else:
+                raise F5ModuleError(resp.content)
+        if 'items' not in response:
+            return []
+        result = response['items']
+        return result
+
+
+class GtmNaptrPoolsFactManager(BaseManager):
+    def __init__(self, *args, **kwargs):
+        self.client = kwargs.get('client', None)
+        self.module = kwargs.get('module', None)
+        super(GtmNaptrPoolsFactManager, self).__init__(**kwargs)
+        self.want = GtmXPoolsParameters(params=self.module.params)
+
+    def exec_module(self):
+        facts = self._exec_module()
+        result = dict(gtm_naptr_pools=facts)
+        return result
+
+    def _exec_module(self):
+        if 'gtm' not in self.provisioned_modules:
+            return []
+        results = []
+        facts = self.read_facts()
+        for item in facts:
+            attrs = item.to_return()
+            results.append(attrs)
+        results = sorted(results, key=lambda k: k['full_path'])
+        return results
+
+    def read_facts(self):
+        results = []
+        collection = self.read_collection_from_device()
+        for resource in collection:
+            params = GtmXPoolsParameters(params=resource)
+            results.append(params)
+        return results
+
+    def read_collection_from_device(self):
+        uri = "https://{0}:{1}/mgmt/tm/gtm/pool/naptr".format(
+            self.client.provider['server'],
+            self.client.provider['server_port'],
+        )
+        resp = self.client.api.get(uri)
+        try:
+            response = resp.json()
+        except ValueError as ex:
+            raise F5ModuleError(str(ex))
+        if 'code' in response and response['code'] == 400:
+            if 'message' in response:
+                raise F5ModuleError(response['message'])
+            else:
+                raise F5ModuleError(resp.content)
+        if 'items' not in response:
+            return []
+        result = response['items']
+        return result
+
+
+class GtmSrvPoolsFactManager(BaseManager):
+    def __init__(self, *args, **kwargs):
+        self.client = kwargs.get('client', None)
+        self.module = kwargs.get('module', None)
+        super(GtmSrvPoolsFactManager, self).__init__(**kwargs)
+        self.want = GtmXPoolsParameters(params=self.module.params)
+
+    def exec_module(self):
+        facts = self._exec_module()
+        result = dict(gtm_srv_pools=facts)
+        return result
+
+    def _exec_module(self):
+        if 'gtm' not in self.provisioned_modules:
+            return []
+        results = []
+        facts = self.read_facts()
+        for item in facts:
+            attrs = item.to_return()
+            results.append(attrs)
+        results = sorted(results, key=lambda k: k['full_path'])
+        return results
+
+    def read_facts(self):
+        results = []
+        collection = self.read_collection_from_device()
+        for resource in collection:
+            params = GtmXPoolsParameters(params=resource)
+            results.append(params)
+        return results
+
+    def read_collection_from_device(self):
+        uri = "https://{0}:{1}/mgmt/tm/gtm/pool/srv".format(
+            self.client.provider['server'],
+            self.client.provider['server_port'],
+        )
+        resp = self.client.api.get(uri)
+        try:
+            response = resp.json()
+        except ValueError as ex:
+            raise F5ModuleError(str(ex))
+        if 'code' in response and response['code'] == 400:
+            if 'message' in response:
+                raise F5ModuleError(response['message'])
+            else:
+                raise F5ModuleError(resp.content)
+        if 'items' not in response:
+            return []
+        result = response['items']
+        return result
+
+
+class GtmServersParameters(BaseParameters):
+    api_map = {
+        'fullPath': 'full_path',
+        'exposeRouteDomains': 'expose_route_domains',
+        'iqAllowPath': 'iq_allow_path',
+        'iqAllowServiceCheck': 'iq_allow_service_check',
+        'iqAllowSnmp': 'iq_allow_snmp',
+        'limitCpuUsage': 'limit_cpu_usage',
+        'limitCpuUsageStatus': 'limit_cpu_usage_status',
+        'limitMaxBps': 'limit_max_bps',
+        'limitMaxBpsStatus': 'limit_max_bps_status',
+        'limitMaxConnections': 'limit_max_connections',
+        'limitMaxConnectionsStatus': 'limit_max_connections_status',
+        'limitMaxPps': 'limit_max_pps',
+        'limitMaxPpsStatus': 'limit_max_pps_status',
+        'limitMemAvail': 'limit_mem_available',
+        'limitMemAvailStatus': 'limit_mem_available_status',
+        'linkDiscovery': 'link_discovery',
+        'proberFallback': 'prober_fallback',
+        'proberPreference': 'prober_preference',
+        'virtualServerDiscovery': 'virtual_server_discovery',
+        'devicesReference': 'devices',
+        'virtualServersReference': 'virtual_servers',
+        'monitor': 'monitors',
+    }
+
+    returnables = [
+        'datacenter',
+        'enabled',
+        'disabled',
+        'expose_route_domains',
+        'iq_allow_path',
+        'full_path',
+        'iq_allow_service_check',
+        'iq_allow_snmp',
+        'limit_cpu_usage',
+        'limit_cpu_usage_status',
+        'limit_max_bps',
+        'limit_max_bps_status',
+        'limit_max_connections',
+        'limit_max_connections_status',
+        'limit_max_pps',
+        'limit_max_pps_status',
+        'limit_mem_available',
+        'limit_mem_available_status',
+        'link_discovery',
+        'monitors',
+        'monitor_type',
+        'name',
+        'product',
+        'prober_fallback',
+        'prober_preference',
+        'virtual_server_discovery',
+        'addresses',
+        'devices',
+        'virtual_servers',
+    ]
+
+    @property
+    def monitors(self):
+        if self._values['monitors'] is None:
+            return []
+        try:
+            result = re.findall(r'/\w+/[^\s}]+', self._values['monitors'])
+            return result
+        except Exception:
+            return [self._values['monitors']]
+
+    @property
+    def monitor_type(self):
+        if self._values['monitors'] is None:
+            return None
+        pattern = r'min\s+\d+\s+of'
+        matches = re.search(pattern, self._values['monitors'])
+        if matches:
+            return 'm_of_n'
+        else:
+            return 'and_list'
+
+    @property
+    def limit_mem_available_status(self):
+        return flatten_boolean(self._values['limit_mem_available_status'])
+
+    @property
+    def limit_max_pps_status(self):
+        return flatten_boolean(self._values['limit_max_pps_status'])
+
+    @property
+    def limit_max_connections_status(self):
+        return flatten_boolean(self._values['limit_max_connections_status'])
+
+    @property
+    def limit_max_bps_status(self):
+        return flatten_boolean(self._values['limit_max_bps_status'])
+
+    @property
+    def limit_cpu_usage_status(self):
+        return flatten_boolean(self._values['limit_cpu_usage_status'])
+
+    @property
+    def iq_allow_service_check(self):
+        return flatten_boolean(self._values['iq_allow_service_check'])
+
+    @property
+    def iq_allow_snmp(self):
+        return flatten_boolean(self._values['iq_allow_snmp'])
+
+    @property
+    def expose_route_domains(self):
+        return flatten_boolean(self._values['expose_route_domains'])
+
+    @property
+    def iq_allow_path(self):
+        return flatten_boolean(self._values['iq_allow_path'])
+
+    @property
+    def product(self):
+        if self._values['product'] is None:
+            return None
+        if self._values['product'] in ['single-bigip', 'redundant-bigip']:
+            return 'bigip'
+        return self._values['product']
+
+    @property
+    def devices(self):
+        result = []
+        if self._values['devices'] is None or 'items' not in self._values['devices']:
+            return result
+        for item in self._values['devices']['items']:
+            self._remove_internal_keywords(item)
+            if 'fullPath' in item:
+                item['full_path'] = item.pop('fullPath')
+            result.append(item)
+        return result
+
+    @property
+    def virtual_servers(self):
+        result = []
+        if self._values['virtual_servers'] is None or 'items' not in self._values['virtual_servers']:
+            return result
+        for item in self._values['virtual_servers']['items']:
+            self._remove_internal_keywords(item)
+            if 'disabled' in item:
+                if item['disabled'] in BOOLEANS_TRUE:
+                    item['disabled'] = flatten_boolean(item['disabled'])
+                    item['enabled'] = flatten_boolean(not item['disabled'])
+            if 'enabled' in item:
+                if item['enabled'] in BOOLEANS_TRUE:
+                    item['enabled'] = flatten_boolean(item['enabled'])
+                    item['disabled'] = flatten_boolean(not item['enabled'])
+            if 'fullPath' in item:
+                item['full_path'] = item.pop('fullPath')
+            if 'limitMaxBps' in item:
+                item['limit_max_bps'] = int(item.pop('limitMaxBps'))
+            if 'limitMaxBpsStatus' in item:
+                item['limit_max_bps_status'] = item.pop('limitMaxBpsStatus')
+            if 'limitMaxConnections' in item:
+                item['limit_max_connections'] = int(item.pop('limitMaxConnections'))
+            if 'limitMaxConnectionsStatus' in item:
+                item['limit_max_connections_status'] = item.pop('limitMaxConnectionsStatus')
+            if 'limitMaxPps' in item:
+                item['limit_max_pps'] = int(item.pop('limitMaxPps'))
+            if 'limitMaxPpsStatus' in item:
+                item['limit_max_pps_status'] = item.pop('limitMaxPpsStatus')
+            if 'translationAddress' in item:
+                item['translation_address'] = item.pop('translationAddress')
+            if 'translationPort' in item:
+                item['translation_port'] = int(item.pop('translationPort'))
+            result.append(item)
+        return result
+
+    @property
+    def limit_cpu_usage(self):
+        if self._values['limit_cpu_usage'] is None:
+            return None
+        return int(self._values['limit_cpu_usage'])
+
+    @property
+    def limit_max_bps(self):
+        if self._values['limit_max_bps'] is None:
+            return None
+        return int(self._values['limit_max_bps'])
+
+    @property
+    def limit_max_connections(self):
+        if self._values['limit_max_connections'] is None:
+            return None
+        return int(self._values['limit_max_connections'])
+
+    @property
+    def limit_max_pps(self):
+        if self._values['limit_max_pps'] is None:
+            return None
+        return int(self._values['limit_max_pps'])
+
+    @property
+    def limit_mem_available(self):
+        if self._values['limit_mem_available'] is None:
+            return None
+        return int(self._values['limit_mem_available'])
+
+
+class GtmServersFactManager(BaseManager):
+    def __init__(self, *args, **kwargs):
+        self.client = kwargs.get('client', None)
+        self.module = kwargs.get('module', None)
+        super(GtmServersFactManager, self).__init__(**kwargs)
+        self.want = GtmServersParameters(params=self.module.params)
+
+    def exec_module(self):
+        facts = self._exec_module()
+        result = dict(gtm_servers=facts)
+        return result
+
+    def _exec_module(self):
+        if 'gtm' not in self.provisioned_modules:
+            return []
+        results = []
+        facts = self.read_facts()
+        for item in facts:
+            attrs = item.to_return()
+            results.append(attrs)
+        results = sorted(results, key=lambda k: k['full_path'])
+        return results
+
+    def read_facts(self):
+        results = []
+        collection = self.read_collection_from_device()
+        for resource in collection:
+            params = GtmServersParameters(params=resource)
+            results.append(params)
+        return results
+
+    def read_collection_from_device(self):
+        uri = "https://{0}:{1}/mgmt/tm/gtm/server".format(
+            self.client.provider['server'],
+            self.client.provider['server_port'],
+        )
+        resp = self.client.api.get(uri)
+        try:
+            response = resp.json()
+        except ValueError as ex:
+            raise F5ModuleError(str(ex))
+        if 'code' in response and response['code'] == 400:
+            if 'message' in response:
+                raise F5ModuleError(response['message'])
+            else:
+                raise F5ModuleError(resp.content)
+        if 'items' not in response:
+            return []
+        result = response['items']
+        return result
+
+
+class GtmXWideIpsParameters(BaseParameters):
+    api_map = {
+        'fullPath': 'full_path',
+        'failureRcode': 'failure_rcode',
+        'failureRcodeResponse': 'failure_rcode_response',
+        'failureRcodeTtl': 'failure_rcode_ttl',
+        'lastResortPool': 'last_resort_pool',
+        'minimalResponse': 'minimal_response',
+        'persistCidrIpv4': 'persist_cidr_ipv4',
+        'persistCidrIpv6': 'persist_cidr_ipv6',
+        'poolLbMode': 'pool_lb_mode',
+        'ttlPersistence': 'ttl_persistence'
+    }
+
+    returnables = [
+        'full_path',
+        'description',
+        'enabled',
+        'disabled',
+        'failure_rcode',
+        'failure_rcode_response',
+        'failure_rcode_ttl',
+        'last_resort_pool',
+        'minimal_response',
+        'name',
+        'persist_cidr_ipv4',
+        'persist_cidr_ipv6',
+        'pool_lb_mode',
+        'ttl_persistence',
+        'pools',
+    ]
+
+    @property
+    def pools(self):
+        result = []
+        if self._values['pools'] is None:
+            return []
+        for pool in self._values['pools']:
+            del pool['nameReference']
+            for x in ['order', 'ratio']:
+                if x in pool:
+                    pool[x] = int(pool[x])
+            result.append(pool)
+        return result
+
+    @property
+    def failure_rcode_response(self):
+        return flatten_boolean(self._values['failure_rcode_response'])
+
+    @property
+    def failure_rcode_ttl(self):
+        if self._values['failure_rcode_ttl'] is None:
+            return None
+        return int(self._values['failure_rcode_ttl'])
+
+    @property
+    def persist_cidr_ipv4(self):
+        if self._values['persist_cidr_ipv4'] is None:
+            return None
+        return int(self._values['persist_cidr_ipv4'])
+
+    @property
+    def persist_cidr_ipv6(self):
+        if self._values['persist_cidr_ipv6'] is None:
+            return None
+        return int(self._values['persist_cidr_ipv6'])
+
+    @property
+    def ttl_persistence(self):
+        if self._values['ttl_persistence'] is None:
+            return None
+        return int(self._values['ttl_persistence'])
+
+
+class GtmAWideIpsFactManager(BaseManager):
+    def __init__(self, *args, **kwargs):
+        self.client = kwargs.get('client', None)
+        self.module = kwargs.get('module', None)
+        super(GtmAWideIpsFactManager, self).__init__(**kwargs)
+        self.want = GtmXWideIpsParameters(params=self.module.params)
+
+    def exec_module(self):
+        facts = self._exec_module()
+        result = dict(gtm_a_wide_ips=facts)
+        return result
+
+    def _exec_module(self):
+        if 'gtm' not in self.provisioned_modules:
+            return []
+        results = []
+        facts = self.read_facts()
+        for item in facts:
+            attrs = item.to_return()
+            results.append(attrs)
+        results = sorted(results, key=lambda k: k['full_path'])
+        return results
+
+    def read_facts(self):
+        results = []
+        collection = self.read_collection_from_device()
+        for resource in collection:
+            params = GtmXWideIpsParameters(params=resource)
+            results.append(params)
+        return results
+
+    def read_collection_from_device(self):
+        uri = "https://{0}:{1}/mgmt/tm/gtm/wideip/a".format(
+            self.client.provider['server'],
+            self.client.provider['server_port'],
+        )
+        resp = self.client.api.get(uri)
+        try:
+            response = resp.json()
+        except ValueError as ex:
+            raise F5ModuleError(str(ex))
+        if 'code' in response and response['code'] == 400:
+            if 'message' in response:
+                raise F5ModuleError(response['message'])
+            else:
+                raise F5ModuleError(resp.content)
+        if 'items' not in response:
+            return []
+        result = response['items']
+        return result
+
+
+class GtmAaaaWideIpsFactManager(BaseManager):
+    def __init__(self, *args, **kwargs):
+        self.client = kwargs.get('client', None)
+        self.module = kwargs.get('module', None)
+        super(GtmAaaaWideIpsFactManager, self).__init__(**kwargs)
+        self.want = GtmXWideIpsParameters(params=self.module.params)
+
+    def exec_module(self):
+        facts = self._exec_module()
+        result = dict(gtm_aaaa_wide_ips=facts)
+        return result
+
+    def _exec_module(self):
+        if 'gtm' not in self.provisioned_modules:
+            return []
+        results = []
+        facts = self.read_facts()
+        for item in facts:
+            attrs = item.to_return()
+            results.append(attrs)
+        results = sorted(results, key=lambda k: k['full_path'])
+        return results
+
+    def read_facts(self):
+        results = []
+        collection = self.read_collection_from_device()
+        for resource in collection:
+            params = GtmXWideIpsParameters(params=resource)
+            results.append(params)
+        return results
+
+    def read_collection_from_device(self):
+        uri = "https://{0}:{1}/mgmt/tm/gtm/wideip/aaaa".format(
+            self.client.provider['server'],
+            self.client.provider['server_port'],
+        )
+        resp = self.client.api.get(uri)
+        try:
+            response = resp.json()
+        except ValueError as ex:
+            raise F5ModuleError(str(ex))
+        if 'code' in response and response['code'] == 400:
+            if 'message' in response:
+                raise F5ModuleError(response['message'])
+            else:
+                raise F5ModuleError(resp.content)
+        if 'items' not in response:
+            return []
+        result = response['items']
+        return result
+
+
+class GtmCnameWideIpsFactManager(BaseManager):
+    def __init__(self, *args, **kwargs):
+        self.client = kwargs.get('client', None)
+        self.module = kwargs.get('module', None)
+        super(GtmCnameWideIpsFactManager, self).__init__(**kwargs)
+        self.want = GtmXWideIpsParameters(params=self.module.params)
+
+    def exec_module(self):
+        facts = self._exec_module()
+        result = dict(gtm_cname_wide_ips=facts)
+        return result
+
+    def _exec_module(self):
+        if 'gtm' not in self.provisioned_modules:
+            return []
+        results = []
+        facts = self.read_facts()
+        for item in facts:
+            attrs = item.to_return()
+            results.append(attrs)
+        results = sorted(results, key=lambda k: k['full_path'])
+        return results
+
+    def read_facts(self):
+        results = []
+        collection = self.read_collection_from_device()
+        for resource in collection:
+            params = GtmXWideIpsParameters(params=resource)
+            results.append(params)
+        return results
+
+    def read_collection_from_device(self):
+        uri = "https://{0}:{1}/mgmt/tm/gtm/wideip/cname".format(
+            self.client.provider['server'],
+            self.client.provider['server_port'],
+        )
+        resp = self.client.api.get(uri)
+        try:
+            response = resp.json()
+        except ValueError as ex:
+            raise F5ModuleError(str(ex))
+        if 'code' in response and response['code'] == 400:
+            if 'message' in response:
+                raise F5ModuleError(response['message'])
+            else:
+                raise F5ModuleError(resp.content)
+        if 'items' not in response:
+            return []
+        result = response['items']
+        return result
+
+
+class GtmMxWideIpsFactManager(BaseManager):
+    def __init__(self, *args, **kwargs):
+        self.client = kwargs.get('client', None)
+        self.module = kwargs.get('module', None)
+        super(GtmMxWideIpsFactManager, self).__init__(**kwargs)
+        self.want = GtmXWideIpsParameters(params=self.module.params)
+
+    def exec_module(self):
+        facts = self._exec_module()
+        result = dict(gtm_mx_wide_ips=facts)
+        return result
+
+    def _exec_module(self):
+        if 'gtm' not in self.provisioned_modules:
+            return []
+        results = []
+        facts = self.read_facts()
+        for item in facts:
+            attrs = item.to_return()
+            results.append(attrs)
+        results = sorted(results, key=lambda k: k['full_path'])
+        return results
+
+    def read_facts(self):
+        results = []
+        collection = self.read_collection_from_device()
+        for resource in collection:
+            params = GtmXWideIpsParameters(params=resource)
+            results.append(params)
+        return results
+
+    def read_collection_from_device(self):
+        uri = "https://{0}:{1}/mgmt/tm/gtm/wideip/mx".format(
+            self.client.provider['server'],
+            self.client.provider['server_port'],
+        )
+        resp = self.client.api.get(uri)
+        try:
+            response = resp.json()
+        except ValueError as ex:
+            raise F5ModuleError(str(ex))
+        if 'code' in response and response['code'] == 400:
+            if 'message' in response:
+                raise F5ModuleError(response['message'])
+            else:
+                raise F5ModuleError(resp.content)
+        if 'items' not in response:
+            return []
+        result = response['items']
+        return result
+
+
+class GtmNaptrWideIpsFactManager(BaseManager):
+    def __init__(self, *args, **kwargs):
+        self.client = kwargs.get('client', None)
+        self.module = kwargs.get('module', None)
+        super(GtmNaptrWideIpsFactManager, self).__init__(**kwargs)
+        self.want = GtmXWideIpsParameters(params=self.module.params)
+
+    def exec_module(self):
+        facts = self._exec_module()
+        result = dict(gtm_naptr_wide_ips=facts)
+        return result
+
+    def _exec_module(self):
+        results = []
+        if 'gtm' not in self.provisioned_modules:
+            return []
+        facts = self.read_facts()
+        for item in facts:
+            attrs = item.to_return()
+            results.append(attrs)
+        results = sorted(results, key=lambda k: k['full_path'])
+        return results
+
+    def read_facts(self):
+        results = []
+        collection = self.read_collection_from_device()
+        for resource in collection:
+            params = GtmXWideIpsParameters(params=resource)
+            results.append(params)
+        return results
+
+    def read_collection_from_device(self):
+        uri = "https://{0}:{1}/mgmt/tm/gtm/wideip/naptr".format(
+            self.client.provider['server'],
+            self.client.provider['server_port'],
+        )
+        resp = self.client.api.get(uri)
+        try:
+            response = resp.json()
+        except ValueError as ex:
+            raise F5ModuleError(str(ex))
+        if 'code' in response and response['code'] == 400:
+            if 'message' in response:
+                raise F5ModuleError(response['message'])
+            else:
+                raise F5ModuleError(resp.content)
+        if 'items' not in response:
+            return []
+        result = response['items']
+        return result
+
+
+class GtmSrvWideIpsFactManager(BaseManager):
+    def __init__(self, *args, **kwargs):
+        self.client = kwargs.get('client', None)
+        self.module = kwargs.get('module', None)
+        super(GtmSrvWideIpsFactManager, self).__init__(**kwargs)
+        self.want = GtmXWideIpsParameters(params=self.module.params)
+
+    def exec_module(self):
+        facts = self._exec_module()
+        result = dict(gtm_srv_wide_ips=facts)
+        return result
+
+    def _exec_module(self):
+        if 'gtm' not in self.provisioned_modules:
+            return []
+        results = []
+        facts = self.read_facts()
+        for item in facts:
+            attrs = item.to_return()
+            results.append(attrs)
+        results = sorted(results, key=lambda k: k['full_path'])
+        return results
+
+    def read_facts(self):
+        results = []
+        collection = self.read_collection_from_device()
+        for resource in collection:
+            params = GtmXWideIpsParameters(params=resource)
+            results.append(params)
+        return results
+
+    def read_collection_from_device(self):
+        uri = "https://{0}:{1}/mgmt/tm/gtm/wideip/srv".format(
+            self.client.provider['server'],
+            self.client.provider['server_port'],
+        )
+        resp = self.client.api.get(uri)
+        try:
+            response = resp.json()
+        except ValueError as ex:
+            raise F5ModuleError(str(ex))
+        if 'code' in response and response['code'] == 400:
+            if 'message' in response:
+                raise F5ModuleError(response['message'])
+            else:
+                raise F5ModuleError(resp.content)
+        if 'items' not in response:
+            return []
         result = response['items']
         return result
 
@@ -7286,6 +10194,8 @@ class HttpProfilesFactManager(BaseManager):
                 raise F5ModuleError(response['message'])
             else:
                 raise F5ModuleError(resp.content)
+        if 'items' not in response:
+            return []
         result = response['items']
         return result
 
@@ -7384,6 +10294,8 @@ class IappServicesFactManager(BaseManager):
                 raise F5ModuleError(response['message'])
             else:
                 raise F5ModuleError(resp.content)
+        if 'items' not in response:
+            return []
         result = response['items']
         return result
 
@@ -7591,6 +10503,8 @@ class IcmpMonitorsFactManager(BaseManager):
                 raise F5ModuleError(response['message'])
             else:
                 raise F5ModuleError(resp.content)
+        if 'items' not in response:
+            return []
         result = response['items']
         return result
 
@@ -7691,12 +10605,28 @@ class InterfacesFactManager(BaseManager):
         results = []
         collection = self.read_collection_from_device()
         for resource in collection:
-            params = InterfacesParameters(params=resource.attrs)
+            params = InterfacesParameters(params=resource)
             results.append(params)
         return results
 
     def read_collection_from_device(self):
-        result = self.client.api.tm.net.interfaces.get_collection()
+        uri = "https://{0}:{1}/mgmt/tm/net/interface".format(
+            self.client.provider['server'],
+            self.client.provider['server_port'],
+        )
+        resp = self.client.api.get(uri)
+        try:
+            response = resp.json()
+        except ValueError as ex:
+            raise F5ModuleError(str(ex))
+        if 'code' in response and response['code'] == 400:
+            if 'message' in response:
+                raise F5ModuleError(response['message'])
+            else:
+                raise F5ModuleError(resp.content)
+        if 'items' not in response:
+            return []
+        result = response['items']
         return result
 
 
@@ -7738,12 +10668,28 @@ class InternalDataGroupsFactManager(BaseManager):
         results = []
         collection = self.read_collection_from_device()
         for resource in collection:
-            params = InternalDataGroupsParameters(params=resource.attrs)
+            params = InternalDataGroupsParameters(params=resource)
             results.append(params)
         return results
 
     def read_collection_from_device(self):
-        result = self.client.api.tm.ltm.data_group.internals.get_collection()
+        uri = "https://{0}:{1}/mgmt/tm/ltm/data-group/internal".format(
+            self.client.provider['server'],
+            self.client.provider['server_port'],
+        )
+        resp = self.client.api.get(uri)
+        try:
+            response = resp.json()
+        except ValueError as ex:
+            raise F5ModuleError(str(ex))
+        if 'code' in response and response['code'] == 400:
+            if 'message' in response:
+                raise F5ModuleError(response['message'])
+            else:
+                raise F5ModuleError(resp.content)
+        if 'items' not in response:
+            return []
+        result = response['items']
         return result
 
 
@@ -7821,12 +10767,28 @@ class IrulesFactManager(BaseManager):
         results = []
         collection = self.read_collection_from_device()
         for resource in collection:
-            params = IrulesParameters(params=resource.attrs)
+            params = IrulesParameters(params=resource)
             results.append(params)
         return results
 
     def read_collection_from_device(self):
-        result = self.client.api.tm.ltm.rules.get_collection()
+        uri = "https://{0}:{1}/mgmt/tm/ltm/rule".format(
+            self.client.provider['server'],
+            self.client.provider['server_port'],
+        )
+        resp = self.client.api.get(uri)
+        try:
+            response = resp.json()
+        except ValueError as ex:
+            raise F5ModuleError(str(ex))
+        if 'code' in response and response['code'] == 400:
+            if 'message' in response:
+                raise F5ModuleError(response['message'])
+            else:
+                raise F5ModuleError(resp.content)
+        if 'items' not in response:
+            return []
+        result = response['items']
         return result
 
 
@@ -7879,8 +10841,143 @@ class LtmPoolsParameters(BaseParameters):
         'slow_ramp_time',
         'priority_group_activation',
         'members',
-        'metadata'
+        'metadata',
+        'active_member_count',
+        'available_member_count',
+        'availability_status',
+        'enabled_status',
+        'status_reason',
+        'all_max_queue_entry_age_ever',
+        'all_avg_queue_entry_age',
+        'all_queue_head_entry_age',
+        'all_max_queue_entry_age_recently',
+        'all_num_connections_queued_now',
+        'all_num_connections_serviced',
+        'pool_max_queue_entry_age_ever',
+        'pool_avg_queue_entry_age',
+        'pool_queue_head_entry_age',
+        'pool_max_queue_entry_age_recently',
+        'pool_num_connections_queued_now',
+        'pool_num_connections_serviced',
+        'current_sessions',
+        'member_count',
+        'total_requests',
+        'server_side_bits_in',
+        'server_side_bits_out',
+        'server_side_current_connections',
+        'server_side_max_connections',
+        'server_side_pkts_in',
+        'server_side_pkts_out',
+        'server_side_total_connections',
     ]
+
+    @property
+    def active_member_count(self):
+        return int(self._values['stats']['activeMemberCnt'])
+
+    @property
+    def available_member_count(self):
+        return int(self._values['stats']['availableMemberCnt'])
+
+    @property
+    def all_max_queue_entry_age_ever(self):
+        return self._values['stats']['connqAll']['ageEdm']
+
+    @property
+    def all_avg_queue_entry_age(self):
+        return self._values['stats']['connqAll']['ageEma']
+
+    @property
+    def all_queue_head_entry_age(self):
+        return self._values['stats']['connqAll']['ageHead']
+
+    @property
+    def all_max_queue_entry_age_recently(self):
+        return self._values['stats']['connqAll']['ageMax']
+
+    @property
+    def all_num_connections_queued_now(self):
+        return self._values['stats']['connqAll']['depth']
+
+    @property
+    def all_num_connections_serviced(self):
+        return self._values['stats']['connqAll']['serviced']
+
+    @property
+    def availability_status(self):
+        return self._values['stats']['status']['availabilityState']
+
+    @property
+    def enabled_status(self):
+        return self._values['stats']['status']['enabledState']
+
+    @property
+    def status_reason(self):
+        return self._values['stats']['status']['statusReason']
+
+    @property
+    def pool_max_queue_entry_age_ever(self):
+        return self._values['stats']['connq']['ageEdm']
+
+    @property
+    def pool_avg_queue_entry_age(self):
+        return self._values['stats']['connq']['ageEma']
+
+    @property
+    def pool_queue_head_entry_age(self):
+        return self._values['stats']['connq']['ageHead']
+
+    @property
+    def pool_max_queue_entry_age_recently(self):
+        return self._values['stats']['connq']['ageMax']
+
+    @property
+    def pool_num_connections_queued_now(self):
+        return self._values['stats']['connq']['depth']
+
+    @property
+    def pool_num_connections_serviced(self):
+        return self._values['stats']['connq']['serviced']
+
+    @property
+    def current_sessions(self):
+        return self._values['stats']['curSessions']
+
+    @property
+    def member_count(self):
+        return self._values['stats']['memberCnt']
+
+    @property
+    def total_requests(self):
+        return self._values['stats']['totRequests']
+
+    @property
+    def server_side_bits_in(self):
+        return self._values['stats']['serverside']['bitsIn']
+
+    @property
+    def server_side_bits_out(self):
+        return self._values['stats']['serverside']['bitsOut']
+
+    @property
+    def server_side_current_connections(self):
+        return self._values['stats']['serverside']['curConns']
+
+    @property
+    def server_side_max_connections(self):
+        return self._values['stats']['serverside']['maxConns']
+
+    @property
+    def server_side_pkts_in(self):
+        return self._values['stats']['serverside']['pktsIn']
+
+    @property
+    def server_side_pkts_out(self):
+        return self._values['stats']['serverside']['pktsOut']
+
+    @property
+    def server_side_total_connections(self):
+        return self._values['stats']['serverside']['totConns']
 
     @property
     def ignore_persisted_weight(self):
@@ -7967,10 +11064,15 @@ class LtmPoolsParameters(BaseParameters):
             session = member.pop('session')
             state = member.pop('state')
 
-            if state in ['user-up', 'unchecked', 'fqdn-up-no-addr'] and session in ['user-enabled']:
+            member['real_session'] = session
+            member['real_state'] = state
+
+            if state in ['user-up', 'unchecked', 'fqdn-up-no-addr', 'fqdn-up'] and session in ['user-enabled']:
                 member['state'] = 'present'
             elif state in ['user-down'] and session in ['user-disabled']:
                 member['state'] = 'forced_offline'
+            elif state in ['up', 'checking'] and session in ['monitor-enabled']:
+                member['state'] = 'present'
             elif state in ['down'] and session in ['monitor-enabled']:
                 member['state'] = 'offline'
             else:
@@ -8016,9 +11118,10 @@ class LtmPoolsFactManager(BaseManager):
         results = []
         collection = self.read_collection_from_device()
         for resource in collection:
-            attrs = resource.attrs
-            members = resource.members_s.get_collection()
-            attrs['members'] = [member.attrs for member in members]
+            attrs = resource
+            members = self.read_member_from_device(attrs['fullPath'])
+            attrs['members'] = members
+            attrs['stats'] = self.read_stats_from_device(attrs['fullPath'])
             params = LtmPoolsParameters(params=attrs)
             results.append(params)
         return results
@@ -8034,8 +11137,65 @@ class LtmPoolsFactManager(BaseManager):
         Returns:
              list: List of ``Pool`` objects
         """
-        result = self.client.api.tm.ltm.pools.get_collection()
+        uri = "https://{0}:{1}/mgmt/tm/ltm/pool".format(
+            self.client.provider['server'],
+            self.client.provider['server_port'],
+        )
+        resp = self.client.api.get(uri)
+        try:
+            response = resp.json()
+        except ValueError as ex:
+            raise F5ModuleError(str(ex))
+        if 'code' in response and response['code'] == 400:
+            if 'message' in response:
+                raise F5ModuleError(response['message'])
+            else:
+                raise F5ModuleError(resp.content)
+        if 'items' not in response:
+            return []
+        result = response['items']
         return result
+
+    def read_member_from_device(self, full_path):
+        uri = "https://{0}:{1}/mgmt/tm/ltm/pool/{2}/members".format(
+            self.client.provider['server'],
+            self.client.provider['server_port'],
+            transform_name(name=full_path)
+        )
+        resp = self.client.api.get(uri)
+        try:
+            response = resp.json()
+        except ValueError as ex:
+            raise F5ModuleError(str(ex))
+        if 'code' in response and response['code'] == 400:
+            if 'message' in response:
+                raise F5ModuleError(response['message'])
+            else:
+                raise F5ModuleError(resp.content)
+        result = response['items']
+        return result
+
+    def read_stats_from_device(self, full_path):
+        uri = "https://{0}:{1}/mgmt/tm/ltm/pool/{2}/stats".format(
+            self.client.provider['server'],
+            self.client.provider['server_port'],
+            transform_name(name=full_path)
+        )
+        resp = self.client.api.get(uri)
+        try:
+            response = resp.json()
+        except ValueError as ex:
+            raise F5ModuleError(str(ex))
+        if 'code' in response and response['code'] == 400:
+            if 'message' in response:
+                raise F5ModuleError(response['message'])
+            else:
+                raise F5ModuleError(resp.content)
+        result = parseStats(response)
+        try:
+            return result['stats']
+        except KeyError:
+            return {}
 
 
 class NodesParameters(BaseParameters):
@@ -8098,27 +11258,27 @@ class NodesParameters(BaseParameters):
 
     @property
     def monitor_status(self):
-        return self._values['stats']['monitorStatus']['description']
+        return self._values['stats']['monitorStatus']
 
     @property
     def session_status(self):
-        return self._values['stats']['sessionStatus']['description']
+        return self._values['stats']['sessionStatus']
 
     @property
     def availability_status(self):
-        return self._values['stats']['status_availabilityState']['description']
+        return self._values['stats']['status']['availabilityState']
 
     @property
     def enabled_status(self):
-        return self._values['stats']['status_enabledState']['description']
+        return self._values['stats']['status']['enabledState']
 
     @property
     def status_reason(self):
-        return self._values['stats']['status_statusReason']['description']
+        return self._values['stats']['status']['statusReason']
 
     @property
     def monitor_rule(self):
-        return self._values['stats']['monitorRule']['description']
+        return self._values['stats']['monitorRule']
 
 
 class NodesFactManager(BaseManager):
@@ -8146,15 +11306,53 @@ class NodesFactManager(BaseManager):
         results = []
         collection = self.read_collection_from_device()
         for resource in collection:
-            attrs = resource.attrs
-            attrs['stats'] = Stats(resource.stats.load()).stat
+            attrs = resource
+            attrs['stats'] = self.read_stats_from_device(attrs['fullPath'])
             params = NodesParameters(params=attrs)
             results.append(params)
         return results
 
     def read_collection_from_device(self):
-        result = self.client.api.tm.ltm.nodes.get_collection()
+        uri = "https://{0}:{1}/mgmt/tm/ltm/node".format(
+            self.client.provider['server'],
+            self.client.provider['server_port'],
+        )
+        resp = self.client.api.get(uri)
+        try:
+            response = resp.json()
+        except ValueError as ex:
+            raise F5ModuleError(str(ex))
+        if 'code' in response and response['code'] == 400:
+            if 'message' in response:
+                raise F5ModuleError(response['message'])
+            else:
+                raise F5ModuleError(resp.content)
+        if 'items' not in response:
+            return []
+        result = response['items']
         return result
+
+    def read_stats_from_device(self, full_path):
+        uri = "https://{0}:{1}/mgmt/tm/ltm/node/{2}/stats".format(
+            self.client.provider['server'],
+            self.client.provider['server_port'],
+            transform_name(name=full_path)
+        )
+        resp = self.client.api.get(uri)
+        try:
+            response = resp.json()
+        except ValueError as ex:
+            raise F5ModuleError(str(ex))
+        if 'code' in response and response['code'] == 400:
+            if 'message' in response:
+                raise F5ModuleError(response['message'])
+            else:
+                raise F5ModuleError(resp.content)
+        result = parseStats(response)
+        try:
+            return result['stats']
+        except KeyError:
+            return {}
 
 
 class OneConnectProfilesParameters(BaseParameters):
@@ -8250,6 +11448,8 @@ class OneConnectProfilesFactManager(BaseManager):
                 raise F5ModuleError(response['message'])
             else:
                 raise F5ModuleError(resp.content)
+        if 'items' not in response:
+            return []
         result = response['items']
         return result
 
@@ -8312,6 +11512,8 @@ class PartitionFactManager(BaseManager):
                 raise F5ModuleError(response['message'])
             else:
                 raise F5ModuleError(resp.content)
+        if 'items' not in response:
+            return []
         result = response['items']
         return result
 
@@ -8364,7 +11566,23 @@ class ProvisionInfoFactManager(BaseManager):
         return results
 
     def read_collection_from_device(self):
-        result = self.client.api.tm.sys.provision.get_collection()
+        uri = "https://{0}:{1}/mgmt/tm/sys/provision".format(
+            self.client.provider['server'],
+            self.client.provider['server_port'],
+        )
+        resp = self.client.api.get(uri)
+        try:
+            response = resp.json()
+        except ValueError as ex:
+            raise F5ModuleError(str(ex))
+        if 'code' in response and response['code'] == 400:
+            if 'message' in response:
+                raise F5ModuleError(response['message'])
+            else:
+                raise F5ModuleError(resp.content)
+        if 'items' not in response:
+            return []
+        result = response['items']
         return result
 
 
@@ -8448,6 +11666,8 @@ class RouteDomainFactManager(BaseManager):
                 raise F5ModuleError(response['message'])
             else:
                 raise F5ModuleError(resp.content)
+        if 'items' not in response:
+            return []
         result = response['items']
         return result
 
@@ -8537,12 +11757,28 @@ class SelfIpsFactManager(BaseManager):
         results = []
         collection = self.read_collection_from_device()
         for resource in collection:
-            params = SelfIpsParameters(params=resource.attrs)
+            params = SelfIpsParameters(params=resource)
             results.append(params)
         return results
 
     def read_collection_from_device(self):
-        result = self.client.api.tm.net.selfips.get_collection()
+        uri = "https://{0}:{1}/mgmt/tm/net/self".format(
+            self.client.provider['server'],
+            self.client.provider['server_port'],
+        )
+        resp = self.client.api.get(uri)
+        try:
+            response = resp.json()
+        except ValueError as ex:
+            raise F5ModuleError(str(ex))
+        if 'code' in response and response['code'] == 400:
+            if 'message' in response:
+                raise F5ModuleError(response['message'])
+            else:
+                raise F5ModuleError(resp.content)
+        if 'items' not in response:
+            return []
+        result = response['items']
         return result
 
 
@@ -8846,6 +12082,8 @@ class ServerSslProfilesFactManager(BaseManager):
                 raise F5ModuleError(response['message'])
             else:
                 raise F5ModuleError(resp.content)
+        if 'items' not in response:
+            return []
         result = response['items']
         return result
 
@@ -8913,12 +12151,28 @@ class SoftwareVolumesFactManager(BaseManager):
         results = []
         collection = self.read_collection_from_device()
         for resource in collection:
-            params = SoftwareVolumesParameters(params=resource.attrs)
+            params = SoftwareVolumesParameters(params=resource)
             results.append(params)
         return results
 
     def read_collection_from_device(self):
-        result = self.client.api.tm.sys.software.volumes.get_collection()
+        uri = "https://{0}:{1}/mgmt/tm/sys/software/volume".format(
+            self.client.provider['server'],
+            self.client.provider['server_port'],
+        )
+        resp = self.client.api.get(uri)
+        try:
+            response = resp.json()
+        except ValueError as ex:
+            raise F5ModuleError(str(ex))
+        if 'code' in response and response['code'] == 400:
+            if 'message' in response:
+                raise F5ModuleError(response['message'])
+            else:
+                raise F5ModuleError(resp.content)
+        if 'items' not in response:
+            return []
+        result = response['items']
         return result
 
 
@@ -8984,6 +12238,8 @@ class SoftwareHotfixesFactManager(BaseManager):
                 raise F5ModuleError(response['message'])
             else:
                 raise F5ModuleError(resp.content)
+        if 'items' not in response:
+            return []
         result = response['items']
         return result
 
@@ -9034,7 +12290,15 @@ class SoftwareImagesParameters(BaseParameters):
         """
         if self._values['build_date'] is None:
             return None
-        result = datetime.datetime.strptime(self._values['build_date'], '%a %b %d %H %M %S PDT %Y').isoformat()
+
+        d = self._values['build_date'].split(' ')
+
+        # This removes the timezone portion from the string. This is done
+        # because Python has awfule tz parsing and strptime doesnt work with
+        # all timezones in %Z; it only uses the timezones found in time.tzname
+        d.pop(6)
+
+        result = datetime.datetime.strptime(' '.join(d), '%a %b %d %H %M %S %Y').isoformat()
         return result
 
     @property
@@ -9101,6 +12365,8 @@ class SoftwareImagesFactManager(BaseManager):
                 raise F5ModuleError(response['message'])
             else:
                 raise F5ModuleError(resp.content)
+        if 'items' not in response:
+            return []
         result = response['items']
         return result
 
@@ -9177,12 +12443,28 @@ class SslCertificatesFactManager(BaseManager):
         results = []
         collection = self.read_collection_from_device()
         for resource in collection:
-            params = SslCertificatesParameters(params=resource.attrs)
+            params = SslCertificatesParameters(params=resource)
             results.append(params)
         return results
 
     def read_collection_from_device(self):
-        result = self.client.api.tm.sys.file.ssl_certs.get_collection()
+        uri = "https://{0}:{1}/mgmt/tm/sys/file/ssl-cert".format(
+            self.client.provider['server'],
+            self.client.provider['server_port'],
+        )
+        resp = self.client.api.get(uri)
+        try:
+            response = resp.json()
+        except ValueError as ex:
+            raise F5ModuleError(str(ex))
+        if 'code' in response and response['code'] == 400:
+            if 'message' in response:
+                raise F5ModuleError(response['message'])
+            else:
+                raise F5ModuleError(resp.content)
+        if 'items' not in response:
+            return []
+        result = response['items']
         return result
 
 
@@ -9239,12 +12521,28 @@ class SslKeysFactManager(BaseManager):
         results = []
         collection = self.read_collection_from_device()
         for resource in collection:
-            params = SslKeysParameters(params=resource.attrs)
+            params = SslKeysParameters(params=resource)
             results.append(params)
         return results
 
     def read_collection_from_device(self):
-        result = self.client.api.tm.sys.file.ssl_keys.get_collection()
+        uri = "https://{0}:{1}/mgmt/tm/sys/file/ssl-key".format(
+            self.client.provider['server'],
+            self.client.provider['server_port'],
+        )
+        resp = self.client.api.get(uri)
+        try:
+            response = resp.json()
+        except ValueError as ex:
+            raise F5ModuleError(str(ex))
+        if 'code' in response and response['code'] == 400:
+            if 'message' in response:
+                raise F5ModuleError(response['message'])
+            else:
+                raise F5ModuleError(resp.content)
+        if 'items' not in response:
+            return []
+        result = response['items']
         return result
 
 
@@ -9310,6 +12608,8 @@ class SystemDbFactManager(BaseManager):
                 raise F5ModuleError(response['message'])
             else:
                 raise F5ModuleError(resp.content)
+        if 'items' not in response:
+            return []
         result = response['items']
         return result
 
@@ -9863,6 +13163,8 @@ class TcpMonitorsFactManager(BaseManager):
                 raise F5ModuleError(response['message'])
             else:
                 raise F5ModuleError(resp.content)
+        if 'items' not in response:
+            return []
         result = response['items']
         return result
 
@@ -9949,6 +13251,8 @@ class TcpHalfOpenMonitorsFactManager(BaseManager):
                 raise F5ModuleError(response['message'])
             else:
                 raise F5ModuleError(resp.content)
+        if 'items' not in response:
+            return []
         result = response['items']
         return result
 
@@ -10372,6 +13676,8 @@ class TcpProfilesFactManager(BaseManager):
                 raise F5ModuleError(response['message'])
             else:
                 raise F5ModuleError(resp.content)
+        if 'items' not in response:
+            return []
         result = response['items']
         return result
 
@@ -10455,15 +13761,53 @@ class TrafficGroupsFactManager(BaseManager):
         results = []
         collection = self.read_collection_from_device()
         for resource in collection:
-            attrs = resource.attrs
-            attrs['stats'] = Stats(resource.stats.load()).stat
+            attrs = resource
+            attrs['stats'] = self.read_stats_from_device(attrs['fullPath'])
             params = TrafficGroupsParameters(params=attrs)
             results.append(params)
         return results
 
     def read_collection_from_device(self):
-        result = self.client.api.tm.cm.traffic_groups.get_collection()
+        uri = "https://{0}:{1}/mgmt/tm/cm/traffic-group".format(
+            self.client.provider['server'],
+            self.client.provider['server_port'],
+        )
+        resp = self.client.api.get(uri)
+        try:
+            response = resp.json()
+        except ValueError as ex:
+            raise F5ModuleError(str(ex))
+        if 'code' in response and response['code'] == 400:
+            if 'message' in response:
+                raise F5ModuleError(response['message'])
+            else:
+                raise F5ModuleError(resp.content)
+        if 'items' not in response:
+            return []
+        result = response['items']
         return result
+
+    def read_stats_from_device(self, full_path):
+        uri = "https://{0}:{1}/mgmt/tm/cm/traffic-group/{2}/stats".format(
+            self.client.provider['server'],
+            self.client.provider['server_port'],
+            transform_name(name=full_path)
+        )
+        resp = self.client.api.get(uri)
+        try:
+            response = resp.json()
+        except ValueError as ex:
+            raise F5ModuleError(str(ex))
+        if 'code' in response and response['code'] == 400:
+            if 'message' in response:
+                raise F5ModuleError(response['message'])
+            else:
+                raise F5ModuleError(resp.content)
+        result = parseStats(response)
+        try:
+            return result['stats']
+        except KeyError:
+            return {}
 
 
 class TrunksParameters(BaseParameters):
@@ -10515,9 +13859,7 @@ class TrunksParameters(BaseParameters):
 
     @property
     def media_status(self):
-        # This is in the 'description' key instead of the more common
-        # 'value' key. I'm not sure why this is, but it is.
-        return self._values['stats']['status']['description']
+        return self._values['stats']['status']
 
 
 class TrunksFactManager(BaseManager):
@@ -10545,15 +13887,53 @@ class TrunksFactManager(BaseManager):
         results = []
         collection = self.read_collection_from_device()
         for resource in collection:
-            attrs = resource.attrs
-            attrs['stats'] = Stats(resource.stats.load()).stat
+            attrs = resource
+            attrs['stats'] = self.read_stats_from_device(attrs['fullPath'])
             params = TrunksParameters(params=attrs)
             results.append(params)
         return results
 
     def read_collection_from_device(self):
-        result = self.client.api.tm.net.trunks.get_collection()
+        uri = "https://{0}:{1}/mgmt/tm/net/trunk".format(
+            self.client.provider['server'],
+            self.client.provider['server_port'],
+        )
+        resp = self.client.api.get(uri)
+        try:
+            response = resp.json()
+        except ValueError as ex:
+            raise F5ModuleError(str(ex))
+        if 'code' in response and response['code'] == 400:
+            if 'message' in response:
+                raise F5ModuleError(response['message'])
+            else:
+                raise F5ModuleError(resp.content)
+        if 'items' not in response:
+            return []
+        result = response['items']
         return result
+
+    def read_stats_from_device(self, full_path):
+        uri = "https://{0}:{1}/mgmt/tm/net/trunk/{2}/stats".format(
+            self.client.provider['server'],
+            self.client.provider['server_port'],
+            transform_name(name=full_path)
+        )
+        resp = self.client.api.get(uri)
+        try:
+            response = resp.json()
+        except ValueError as ex:
+            raise F5ModuleError(str(ex))
+        if 'code' in response and response['code'] == 400:
+            if 'message' in response:
+                raise F5ModuleError(response['message'])
+            else:
+                raise F5ModuleError(resp.content)
+        result = parseStats(response)
+        try:
+            return result['stats']
+        except KeyError:
+            return {}
 
 
 class UdpProfilesParameters(BaseParameters):
@@ -10662,6 +14042,8 @@ class UdpProfilesFactManager(BaseManager):
                 raise F5ModuleError(response['message'])
             else:
                 raise F5ModuleError(resp.content)
+        if 'items' not in response:
+            return []
         result = response['items']
         return result
 
@@ -10718,6 +14100,8 @@ class VcmpGuestsFactManager(BaseManager):
         return result
 
     def _exec_module(self):
+        if 'vcmp' not in self.provisioned_modules:
+            return []
         results = []
         facts = self.read_facts()
         for item in facts:
@@ -10749,6 +14133,8 @@ class VcmpGuestsFactManager(BaseManager):
                 raise F5ModuleError(response['message'])
             else:
                 raise F5ModuleError(resp.content)
+        if 'items' not in response:
+            return []
         result = response['items']
         return result
 
@@ -10842,12 +14228,28 @@ class VirtualAddressesFactManager(BaseManager):
         results = []
         collection = self.read_collection_from_device()
         for resource in collection:
-            params = VirtualAddressesParameters(params=resource.attrs)
+            params = VirtualAddressesParameters(params=resource)
             results.append(params)
         return results
 
     def read_collection_from_device(self):
-        result = self.client.api.tm.ltm.virtual_address_s.get_collection()
+        uri = "https://{0}:{1}/mgmt/tm/ltm/virtual-address".format(
+            self.client.provider['server'],
+            self.client.provider['server_port'],
+        )
+        resp = self.client.api.get(uri)
+        try:
+            response = resp.json()
+        except ValueError as ex:
+            raise F5ModuleError(str(ex))
+        if 'code' in response and response['code'] == 400:
+            if 'message' in response:
+                raise F5ModuleError(response['message'])
+            else:
+                raise F5ModuleError(resp.content)
+        if 'items' not in response:
+            return []
+        result = response['items']
         return result
 
 
@@ -10920,8 +14322,198 @@ class VirtualServersParameters(BaseParameters):
         'type',
         'profiles',
         'destination_address',
-        'destination_port'
+        'destination_port',
+        'availability_status',
+        'status_reason',
+        'total_requests',
+        'client_side_bits_in',
+        'client_side_bits_out',
+        'client_side_current_connections',
+        'client_side_evicted_connections',
+        'client_side_max_connections',
+        'client_side_pkts_in',
+        'client_side_pkts_out',
+        'client_side_slow_killed',
+        'client_side_total_connections',
+        'cmp_mode',
+        'ephemeral_bits_in',
+        'ephemeral_bits_out',
+        'ephemeral_current_connections',
+        'ephemeral_evicted_connections',
+        'ephemeral_max_connections',
+        'ephemeral_pkts_in',
+        'ephemeral_pkts_out',
+        'ephemeral_slow_killed',
+        'ephemeral_total_connections',
+        'total_software_accepted_syn_cookies',
+        'total_hardware_accepted_syn_cookies',
+        'total_hardware_syn_cookies',
+        'hardware_syn_cookie_instances',
+        'total_software_rejected_syn_cookies',
+        'software_syn_cookie_instances',
+        'current_syn_cache',
+        'syn_cache_overflow',
+        'total_software_syn_cookies',
+        'syn_cookies_status',
+        'max_conn_duration',
+        'mean_conn_duration',
+        'min_conn_duration',
+        'cpu_usage_ratio_last_5_min',
+        'cpu_usage_ratio_last_5_sec',
+        'cpu_usage_ratio_last_1_min',
     ]
+
+    @property
+    def max_conn_duration(self):
+        return self._values['stats']['csMaxConnDur']
+
+    @property
+    def mean_conn_duration(self):
+        return self._values['stats']['csMeanConnDur']
+
+    @property
+    def min_conn_duration(self):
+        return self._values['stats']['csMinConnDur']
+
+    @property
+    def cpu_usage_ratio_last_5_min(self):
+        return self._values['stats']['fiveMinAvgUsageRatio']
+
+    @property
+    def cpu_usage_ratio_last_5_sec(self):
+        return self._values['stats']['fiveSecAvgUsageRatio']
+
+    @property
+    def cpu_usage_ratio_last_1_min(self):
+        return self._values['stats']['oneMinAvgUsageRatio']
+
+    @property
+    def cmp_mode(self):
+        return self._values['stats']['cmpEnableMode']
+
+    @property
+    def availability_status(self):
+        return self._values['stats']['status']['availabilityState']
+
+    @property
+    def status_reason(self):
+        return self._values['stats']['status']['statusReason']
+
+    @property
+    def total_requests(self):
+        return self._values['stats']['totRequests']
+
+    @property
+    def ephemeral_bits_in(self):
+        return self._values['stats']['ephemeral']['bitsIn']
+
+    @property
+    def ephemeral_bits_out(self):
+        return self._values['stats']['ephemeral']['bitsOut']
+
+    @property
+    def ephemeral_current_connections(self):
+        return self._values['stats']['ephemeral']['curConns']
+
+    @property
+    def ephemeral_evicted_connections(self):
+        return self._values['stats']['ephemeral']['evictedConns']
+
+    @property
+    def ephemeral_max_connections(self):
+        return self._values['stats']['ephemeral']['maxConns']
+
+    @property
+    def ephemeral_pkts_in(self):
+        return self._values['stats']['ephemeral']['pktsIn']
+
+    @property
+    def ephemeral_pkts_out(self):
+        return self._values['stats']['ephemeral']['pktsOut']
+
+    @property
+    def ephemeral_slow_killed(self):
+        return self._values['stats']['ephemeral']['slowKilled']
+
+    @property
+    def ephemeral_total_connections(self):
+        return self._values['stats']['ephemeral']['totConns']
+
+    @property
+    def client_side_bits_in(self):
+        return self._values['stats']['clientside']['bitsIn']
+
+    @property
+    def client_side_bits_out(self):
+        return self._values['stats']['clientside']['bitsOut']
+
+    @property
+    def client_side_current_connections(self):
+        return self._values['stats']['clientside']['curConns']
+
+    @property
+    def client_side_evicted_connections(self):
+        return self._values['stats']['clientside']['evictedConns']
+
+    @property
+    def client_side_max_connections(self):
+        return self._values['stats']['clientside']['maxConns']
+
+    @property
+    def client_side_pkts_in(self):
+        return self._values['stats']['clientside']['pktsIn']
+
+    @property
+    def client_side_pkts_out(self):
+        return self._values['stats']['clientside']['pktsOut']
+
+    @property
+    def client_side_slow_killed(self):
+        return self._values['stats']['clientside']['slowKilled']
+
+    @property
+    def client_side_total_connections(self):
+        return self._values['stats']['clientside']['totConns']
+
+    @property
+    def total_software_accepted_syn_cookies(self):
+        return self._values['stats']['syncookie']['accepts']
+
+    @property
+    def total_hardware_accepted_syn_cookies(self):
+        return self._values['stats']['syncookie']['hwAccepts']
+
+    @property
+    def total_hardware_syn_cookies(self):
+        return self._values['stats']['syncookie']['hwSyncookies']
+
+    @property
+    def hardware_syn_cookie_instances(self):
+        return self._values['stats']['syncookie']['hwsyncookieInstance']
+
+    @property
+    def total_software_rejected_syn_cookies(self):
+        return self._values['stats']['syncookie']['rejects']
+
+    @property
+    def software_syn_cookie_instances(self):
+        return self._values['stats']['syncookie']['swsyncookieInstance']
+
+    @property
+    def current_syn_cache(self):
+        return self._values['stats']['syncookie']['syncacheCurr']
+
+    @property
+    def syn_cache_overflow(self):
+        return self._values['stats']['syncookie']['syncacheOver']
+
+    @property
+    def total_software_syn_cookies(self):
+        return self._values['stats']['syncookie']['syncookies']
+
+    @property
+    def syn_cookies_status(self):
+        return self._values['stats']['syncookieStatus']
 
     @property
     def destination_address(self):
@@ -11004,9 +14596,9 @@ class VirtualServersParameters(BaseParameters):
         result = []
         for item in self._values['profiles']['items']:
             context = item['context']
-            if 'context' == 'serverside':
+            if context == 'serverside':
                 context = 'server-side'
-            elif 'context' == 'clientside':
+            elif context == 'clientside':
                 context = 'client-side'
             name = item['name']
             if context in ['all', 'server-side', 'client-side']:
@@ -11085,14 +14677,6 @@ class VirtualServersParameters(BaseParameters):
         if self._values['snat_type'] is None:
             return None
         if 'type' in self._values['snat_type']:
-            if self._values['snat_type']['type'] == 'pool':
-                return self._values['snat_type']['pool']
-
-    @property
-    def snat_type(self):
-        if self._values['snat_type'] is None:
-            return None
-        if 'type' in self._values['snat_type']:
             if self._values['snat_type']['type'] == 'automap':
                 return 'automap'
             elif self._values['snat_type']['type'] == 'none':
@@ -11127,7 +14711,7 @@ class VirtualServersParameters(BaseParameters):
     @property
     def enabled(self):
         if self._values['enabled'] is None:
-            return None
+            return 'no'
         elif self._values['enabled'] is True:
             return 'yes'
         return 'no'
@@ -11308,19 +14892,53 @@ class VirtualServersFactManager(BaseManager):
         results = []
         collection = self.read_collection_from_device()
         for resource in collection:
-            params = VirtualServersParameters(params=resource.attrs)
+            attrs = resource
+            attrs['stats'] = self.read_stats_from_device(attrs['fullPath'])
+            params = VirtualServersParameters(params=attrs)
             results.append(params)
         return results
 
     def read_collection_from_device(self):
-        result = self.client.api.tm.ltm.virtuals.get_collection(
-            requests_params=dict(
-                params=dict(
-                    expandSubcollections='true'
-                )
-            )
+        uri = "https://{0}:{1}/mgmt/tm/ltm/virtual?expandSubcollections=true".format(
+            self.client.provider['server'],
+            self.client.provider['server_port'],
         )
+        resp = self.client.api.get(uri)
+        try:
+            response = resp.json()
+        except ValueError as ex:
+            raise F5ModuleError(str(ex))
+        if 'code' in response and response['code'] == 400:
+            if 'message' in response:
+                raise F5ModuleError(response['message'])
+            else:
+                raise F5ModuleError(resp.content)
+        if 'items' not in response:
+            return []
+        result = response['items']
         return result
+
+    def read_stats_from_device(self, full_path):
+        uri = "https://{0}:{1}/mgmt/tm/ltm/virtual/{2}/stats".format(
+            self.client.provider['server'],
+            self.client.provider['server_port'],
+            transform_name(name=full_path)
+        )
+        resp = self.client.api.get(uri)
+        try:
+            response = resp.json()
+        except ValueError as ex:
+            raise F5ModuleError(str(ex))
+        if 'code' in response and response['code'] == 400:
+            if 'message' in response:
+                raise F5ModuleError(response['message'])
+            else:
+                raise F5ModuleError(resp.content)
+        result = parseStats(response)
+        try:
+            return result['stats']
+        except KeyError:
+            return {}
 
 
 class VlansParameters(BaseParameters):
@@ -11401,12 +15019,12 @@ class VlansParameters(BaseParameters):
     @property
     def true_mac_address(self):
         # Who made this field a "description"!?
-        return self._values['stats']['macTrue']['description']
+        return self._values['stats']['macTrue']
 
     @property
     def tag(self):
         # We can't agree on field names...SMH
-        return self._values['stats']['id']['value']
+        return self._values['stats']['id']
 
     @property
     def failsafe_enabled(self):
@@ -11438,19 +15056,53 @@ class VlansFactManager(BaseManager):
         results = []
         collection = self.read_collection_from_device()
         for resource in collection:
-            attrs = resource.attrs
-            attrs['stats'] = Stats(resource.stats.load()).stat
+            attrs = resource
+            attrs['stats'] = self.read_stats_from_device(attrs['fullPath'])
             params = VlansParameters(params=attrs)
             results.append(params)
         return results
 
     def read_collection_from_device(self):
-        result = self.client.api.tm.net.vlans.get_collection(
-            requests_params=dict(
-                params='expandSubcollections=true'
-            )
+        uri = "https://{0}:{1}/mgmt/tm/net/vlan?expandSubcollections=true".format(
+            self.client.provider['server'],
+            self.client.provider['server_port'],
         )
+        resp = self.client.api.get(uri)
+        try:
+            response = resp.json()
+        except ValueError as ex:
+            raise F5ModuleError(str(ex))
+        if 'code' in response and response['code'] == 400:
+            if 'message' in response:
+                raise F5ModuleError(response['message'])
+            else:
+                raise F5ModuleError(resp.content)
+        if 'items' not in response:
+            return []
+        result = response['items']
         return result
+
+    def read_stats_from_device(self, full_path):
+        uri = "https://{0}:{1}/mgmt/tm/net/vlan/{2}/stats".format(
+            self.client.provider['server'],
+            self.client.provider['server_port'],
+            transform_name(name=full_path)
+        )
+        resp = self.client.api.get(uri)
+        try:
+            response = resp.json()
+        except ValueError as ex:
+            raise F5ModuleError(str(ex))
+        if 'code' in response and response['code'] == 400:
+            if 'message' in response:
+                raise F5ModuleError(response['message'])
+            else:
+                raise F5ModuleError(resp.content)
+        result = parseStats(response)
+        try:
+            return result['stats']
+        except KeyError:
+            return {}
 
 
 class ModuleManager(object):
@@ -11460,161 +15112,72 @@ class ModuleManager(object):
         self.kwargs = kwargs
         self.want = Parameters(params=self.module.params)
         self.managers = {
-            'asm-policy-stats': dict(
-                manager=AsmPolicyStatsFactManager,
-                client=F5RestClient,
-            ),
-            'client-ssl-profiles': dict(
-                manager=ClientSslProfilesFactManager
-            ),
-            'devices': dict(
-                manager=DevicesFactManager
-            ),
-            'device-groups': dict(
-                manager=DeviceGroupsFactManager
-            ),
-            'external-monitors': dict(
-                manager=ExternalMonitorsFactManager,
-                client=F5RestClient
-            ),
-            'fasthttp-profiles': dict(
-                manager=FastHttpProfilesFactManager
-            ),
-            'fastl4-profiles': dict(
-                manager=FastL4ProfilesFactManager,
-                client=F5RestClient
-            ),
-            'gateway-icmp-monitors': dict(
-                manager=GatewayIcmpMonitorsFactManager,
-                client=F5RestClient
-            ),
-            'http-monitors': dict(
-                manager=HttpMonitorsFactManager,
-                client=F5RestClient
-            ),
-            'https-monitors': dict(
-                manager=HttpsMonitorsFactManager,
-                client=F5RestClient
-            ),
-            'http-profiles': dict(
-                manager=HttpProfilesFactManager,
-                client=F5RestClient
-            ),
-            'iapp-services': dict(
-                manager=IappServicesFactManager,
-                client=F5RestClient
-            ),
-            'iapplx-packages': dict(
-                manager=IapplxPackagesFactManager,
-                client=F5RestClient
-            ),
-            'icmp-monitors': dict(
-                manager=IcmpMonitorsFactManager,
-                client=F5RestClient
-            ),
-            'interfaces': dict(
-                manager=InterfacesFactManager
-            ),
-            'internal-data-groups': dict(
-                manager=InternalDataGroupsFactManager
-            ),
-            'irules': dict(
-                manager=IrulesFactManager
-            ),
-            'ltm-pools': dict(
-                manager=LtmPoolsFactManager
-            ),
-            'nodes': dict(
-                manager=NodesFactManager
-            ),
-            'oneconnect-profiles': dict(
-                manager=OneConnectProfilesFactManager,
-                client=F5RestClient
-            ),
-            'partitions': dict(
-                manager=PartitionFactManager,
-                client=F5RestClient
-            ),
-            'provision-info': dict(
-                manager=ProvisionInfoFactManager
-            ),
-            'route-domains': dict(
-                manager=RouteDomainFactManager,
-                client=F5RestClient
-            ),
-            'self-ips': dict(
-                manager=SelfIpsFactManager
-            ),
-            'server-ssl-profiles': dict(
-                manager=ServerSslProfilesFactManager,
-                client=F5RestClient
-            ),
-            'software-volumes': dict(
-                manager=SoftwareVolumesFactManager
-            ),
-            'software-images': dict(
-                manager=SoftwareImagesFactManager,
-                client=F5RestClient
-            ),
-            'software-hotfixes': dict(
-                manager=SoftwareHotfixesFactManager,
-                client=F5RestClient
-            ),
-            'ssl-certs': dict(
-                manager=SslCertificatesFactManager
-            ),
-            'ssl-keys': dict(
-                manager=SslKeysFactManager
-            ),
-            'system-db': dict(
-                manager=SystemDbFactManager,
-                client=F5RestClient
-            ),
-            'system-info': dict(
-                manager=SystemInfoFactManager,
-                client=F5RestClient
-            ),
-            'tcp-monitors': dict(
-                manager=TcpMonitorsFactManager,
-                client=F5RestClient
-            ),
-            'tcp-half-open-monitors': dict(
-                manager=TcpHalfOpenMonitorsFactManager,
-                client=F5RestClient
-            ),
-            'tcp-profiles': dict(
-                manager=TcpProfilesFactManager,
-                client=F5RestClient
-            ),
-            'traffic-groups': dict(
-                manager=TrafficGroupsFactManager
-            ),
-            'trunks': dict(
-                manager=TrunksFactManager
-            ),
-            'udp-profiles': dict(
-                manager=UdpProfilesFactManager,
-                client=F5RestClient
-            ),
-            'vcmp-guests': dict(
-                manager=VcmpGuestsFactManager,
-                client=F5RestClient
-            ),
-            'virtual-addresses': dict(
-                manager=VirtualAddressesFactManager
-            ),
-            'virtual-servers': dict(
-                manager=VirtualServersFactManager
-            ),
-            'vlans': dict(
-                manager=VlansFactManager
-            ),
+            'asm-policy-stats': AsmPolicyStatsFactManager,
+            'asm-policies': AsmPolicyFactManager,
+            'asm-server-technologies': AsmServerTechnologyFactManager,
+            'asm-signature-sets': AsmSignatureSetsFactManager,
+            'client-ssl-profiles': ClientSslProfilesFactManager,
+            'devices': DevicesFactManager,
+            'device-groups': DeviceGroupsFactManager,
+            'external-monitors': ExternalMonitorsFactManager,
+            'fasthttp-profiles': FastHttpProfilesFactManager,
+            'fastl4-profiles': FastL4ProfilesFactManager,
+            'gateway-icmp-monitors': GatewayIcmpMonitorsFactManager,
+            'gtm-a-pools': GtmAPoolsFactManager,
+            'gtm-servers': GtmServersFactManager,
+            'gtm-a-wide-ips': GtmAWideIpsFactManager,
+            'gtm-aaaa-pools': GtmAaaaPoolsFactManager,
+            'gtm-aaaa-wide-ips': GtmAaaaWideIpsFactManager,
+            'gtm-cname-pools': GtmCnamePoolsFactManager,
+            'gtm-cname-wide-ips': GtmCnameWideIpsFactManager,
+            'gtm-mx-pools': GtmMxPoolsFactManager,
+            'gtm-mx-wide-ips': GtmMxWideIpsFactManager,
+            'gtm-naptr-pools': GtmNaptrPoolsFactManager,
+            'gtm-naptr-wide-ips': GtmNaptrWideIpsFactManager,
+            'gtm-srv-pools': GtmSrvPoolsFactManager,
+            'gtm-srv-wide-ips': GtmSrvWideIpsFactManager,
+            'http-monitors': HttpMonitorsFactManager,
+            'https-monitors': HttpsMonitorsFactManager,
+            'http-profiles': HttpProfilesFactManager,
+            'iapp-services': IappServicesFactManager,
+            'iapplx-packages': IapplxPackagesFactManager,
+            'icmp-monitors': IcmpMonitorsFactManager,
+            'interfaces': InterfacesFactManager,
+            'internal-data-groups': InternalDataGroupsFactManager,
+            'irules': IrulesFactManager,
+            'ltm-pools': LtmPoolsFactManager,
+            'nodes': NodesFactManager,
+            'oneconnect-profiles': OneConnectProfilesFactManager,
+            'partitions': PartitionFactManager,
+            'provision-info': ProvisionInfoFactManager,
+            'route-domains': RouteDomainFactManager,
+            'self-ips': SelfIpsFactManager,
+            'server-ssl-profiles': ServerSslProfilesFactManager,
+            'software-volumes': SoftwareVolumesFactManager,
+            'software-images': SoftwareImagesFactManager,
+            'software-hotfixes': SoftwareHotfixesFactManager,
+            'ssl-certs': SslCertificatesFactManager,
+            'ssl-keys': SslKeysFactManager,
+            'system-db': SystemDbFactManager,
+            'system-info': SystemInfoFactManager,
+            'tcp-monitors': TcpMonitorsFactManager,
+            'tcp-half-open-monitors': TcpHalfOpenMonitorsFactManager,
+            'tcp-profiles': TcpProfilesFactManager,
+            'traffic-groups': TrafficGroupsFactManager,
+            'trunks': TrunksFactManager,
+            'udp-profiles': UdpProfilesFactManager,
+            'vcmp-guests': VcmpGuestsFactManager,
+            'virtual-addresses': VirtualAddressesFactManager,
+            'virtual-servers': VirtualServersFactManager,
+            'vlans': VlansFactManager,
         }
 
     def exec_module(self):
         self.handle_all_keyword()
         self.handle_profiles_keyword()
         self.handle_monitors_keyword()
+        self.handle_gtm_pools_keyword()
+        self.handle_gtm_wide_ips_keyword()
         res = self.check_valid_gather_subset(self.want.gather_subset)
         if res:
             invalid = ','.join(res)
@@ -11670,6 +15233,24 @@ class ModuleManager(object):
         managers.remove('monitors')
         self.want.update({'gather_subset': managers})
 
+    def handle_gtm_pools_keyword(self):
+        if 'gtm-pools' not in self.want.gather_subset:
+            return
+        keys = self.managers.keys()
+        managers = [x for x in keys if x.startswith('gtm-') and x.endswith('-pools')]
+        managers += self.want.gather_subset
+        managers.remove('gtm-pools')
+        self.want.update({'gather_subset': managers})
+
+    def handle_gtm_wide_ips_keyword(self):
+        if 'gtm-wide-ips' not in self.want.gather_subset:
+            return
+        keys = self.managers.keys()
+        managers = [x for x in keys if x.startswith('gtm-') and x.endswith('-wide-ips')]
+        managers += self.want.gather_subset
+        managers.remove('gtm-wide-ips')
+        self.want.update({'gather_subset': managers})
+
     def check_valid_gather_subset(self, includes):
         """Check that the specified subset is valid
 
@@ -11692,24 +15273,23 @@ class ModuleManager(object):
 
     def execute_managers(self, managers):
         results = dict()
+        client = F5RestClient(**self.module.params)
+        prov = modules_provisioned(client)
         for manager in managers:
+            manager.provisioned_modules = prov
             result = manager.exec_module()
             results.update(result)
         return results
 
     def get_manager(self, which):
         result = {}
-        info = self.managers.get(which, None)
-        if not info:
+        manager = self.managers.get(which, None)
+        if not manager:
             return result
         kwargs = dict()
         kwargs.update(self.kwargs)
 
-        manager = info.get('manager', None)
-        client = info.get('client', None)
-        if client is None:
-            client = F5Client
-        kwargs['client'] = client(**self.module.params)
+        kwargs['client'] = F5RestClient(**self.module.params)
         result = manager(**kwargs)
         return result
 
@@ -11727,9 +15307,14 @@ class ArgumentSpec(object):
                     'all',
                     'monitors',
                     'profiles',
+                    'gtm-pools',
+                    'gtm-wide-ips',
 
                     # Non-meta choices
+                    'asm-policies',
                     'asm-policy-stats',
+                    'asm-server-technologies',
+                    'asm-signature-sets',
                     'client-ssl-profiles',
                     'devices',
                     'device-groups',
@@ -11737,6 +15322,19 @@ class ArgumentSpec(object):
                     'fasthttp-profiles',
                     'fastl4-profiles',
                     'gateway-icmp-monitors',
+                    'gtm-a-pools',
+                    'gtm-servers',
+                    'gtm-a-wide-ips',
+                    'gtm-aaaa-pools',
+                    'gtm-aaaa-wide-ips',
+                    'gtm-cname-pools',
+                    'gtm-cname-wide-ips',
+                    'gtm-mx-pools',
+                    'gtm-mx-wide-ips',
+                    'gtm-naptr-pools',
+                    'gtm-naptr-wide-ips',
+                    'gtm-srv-pools',
+                    'gtm-srv-wide-ips',
                     'http-profiles',
                     'http-monitors',
                     'https-monitors',
@@ -11775,9 +15373,14 @@ class ArgumentSpec(object):
                     '!all',
                     "!monitors",
                     '!profiles',
+                    '!gtm-pools',
+                    '!gtm-wide-ips',
 
                     # Negations of non-meta-choices
                     '!asm-policy-stats',
+                    '!asm-policies',
+                    '!asm-server-technologies',
+                    '!asm-signature-sets',
                     '!client-ssl-profiles',
                     '!devices',
                     '!device-groups',
@@ -11785,6 +15388,19 @@ class ArgumentSpec(object):
                     '!fasthttp-profiles',
                     '!fastl4-profiles',
                     '!gateway-icmp-monitors',
+                    '!gtm-a-pools',
+                    '!gtm-servers',
+                    '!gtm-a-wide-ips',
+                    '!gtm-aaaa-pools',
+                    '!gtm-aaaa-wide-ips',
+                    '!gtm-cname-pools',
+                    '!gtm-cname-wide-ips',
+                    '!gtm-mx-pools',
+                    '!gtm-mx-wide-ips',
+                    '!gtm-naptr-pools',
+                    '!gtm-naptr-wide-ips',
+                    '!gtm-srv-pools',
+                    '!gtm-srv-wide-ips',
                     '!http-profiles',
                     '!http-monitors',
                     '!https-monitors',
@@ -11833,11 +15449,10 @@ def main():
         argument_spec=spec.argument_spec,
         supports_check_mode=spec.supports_check_mode
     )
-    if not HAS_F5SDK:
-        module.fail_json(msg="The python f5-sdk module is required")
+
+    client = F5RestClient(**module.params)
 
     try:
-        client = F5Client(**module.params)
         mm = ModuleManager(module=module, client=client)
         results = mm.exec_module()
         cleanup_tokens(client)

@@ -22,9 +22,7 @@ __metaclass__ = type
 import re
 import json
 
-from itertools import chain
-
-from ansible.module_utils._text import to_bytes, to_text
+from ansible.module_utils._text import to_text
 from ansible.module_utils.network.common.utils import to_list
 from ansible.plugins.cliconf import CliconfBase
 
@@ -35,21 +33,21 @@ class Cliconf(CliconfBase):
         device_info = {}
 
         device_info['network_os'] = 'nos'
-        reply = self.get(b'show version')
+        reply = self.get('show version')
         data = to_text(reply, errors='surrogate_or_strict').strip()
 
         match = re.search(r'Network Operating System Version: (\S+)', data)
         if match:
             device_info['network_os_version'] = match.group(1)
 
-        reply = self.get(b'show chassis')
+        reply = self.get('show chassis')
         data = to_text(reply, errors='surrogate_or_strict').strip()
 
         match = re.search(r'^Chassis Name:(\s+)(\S+)', data, re.M)
         if match:
             device_info['network_os_model'] = match.group(2)
 
-        reply = self.get(b'show running-config | inc "switch-attributes host-name"')
+        reply = self.get('show running-config | inc "switch-attributes host-name"')
         data = to_text(reply, errors='surrogate_or_strict').strip()
 
         match = re.search(r'switch-attributes host-name (\S+)', data, re.M)
@@ -59,8 +57,8 @@ class Cliconf(CliconfBase):
         return device_info
 
     def get_config(self, source='running', flags=None):
-        if source not in ('running'):
-            return self.invalid_params("fetching configuration from %s is not supported" % source)
+        if source not in 'running':
+            raise ValueError("fetching configuration from %s is not supported" % source)
         if source == 'running':
             cmd = 'show running-config'
 
@@ -71,7 +69,11 @@ class Cliconf(CliconfBase):
         return self.send_command(cmd)
 
     def edit_config(self, command):
-        for cmd in chain(['configure terminal'], to_list(command), ['end']):
+        resp = {}
+        results = []
+        requests = []
+        self.send_command('configure terminal')
+        for cmd in to_list(command):
             if isinstance(cmd, dict):
                 command = cmd['command']
                 prompt = cmd['prompt']
@@ -83,14 +85,19 @@ class Cliconf(CliconfBase):
                 answer = None
                 newline = True
 
-            self.send_command(command, prompt, answer, False, newline)
+            if cmd != 'end' and cmd[0] != '!':
+                results.append(self.send_command(command, prompt, answer, False, newline))
+                requests.append(cmd)
 
-    def get(self, command, prompt=None, answer=None, sendonly=False):
-        return self.send_command(command, prompt=prompt, answer=answer, sendonly=sendonly)
+        self.send_command('end')
+
+        resp['request'] = requests
+        resp['response'] = results
+        return resp
+
+    def get(self, command, prompt=None, answer=None, sendonly=False, check_all=False):
+        return self.send_command(command, prompt=prompt, answer=answer, sendonly=sendonly, check_all=check_all)
 
     def get_capabilities(self):
-        result = {}
-        result['rpc'] = self.get_base_rpc()
-        result['network_api'] = 'cliconf'
-        result['device_info'] = self.get_device_info()
+        result = super(Cliconf, self).get_capabilities()
         return json.dumps(result)

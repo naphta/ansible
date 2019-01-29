@@ -18,19 +18,29 @@ DOCUMENTATION = '''
 module: acme_certificate_revoke
 author: "Felix Fontein (@felixfontein)"
 version_added: "2.7"
-short_description: Revoke certificates with the ACME protocol.
+short_description: Revoke certificates with the ACME protocol
 description:
-   - "Allows to revoke certificates with the ACME protocol, for example
-      for certificates obtained by the M(acme_certificate) module. The
-      ACME protocol is used by some Certificate Authorities such as
-      L(Let's Encrypt,https://letsencrypt.org/)."
-   - "Note that exactly one of C(account_key_src), C(account_key_content),
+   - "Allows to revoke certificates issued by a CA supporting the
+      L(ACME protocol,https://tools.ietf.org/html/draft-ietf-acme-acme-18),
+      such as L(Let's Encrypt,https://letsencrypt.org/)."
+notes:
+   - "Exactly one of C(account_key_src), C(account_key_content),
       C(private_key_src) or C(private_key_content) must be specified."
-   - "Also note that trying to revoke an already revoked certificate
+   - "Trying to revoke an already revoked certificate
       should result in an unchanged status, even if the revocation reason
       was different than the one specified here. Also, depending on the
       server, it can happen that some other error is returned if the
       certificate has already been revoked."
+seealso:
+  - name: The Let's Encrypt documentation
+    description: Documentation for the Let's Encrypt Certification Authority.
+                 Provides useful information for example on rate limits.
+    link: https://letsencrypt.org/docs/
+  - name: Automatic Certificate Management Environment (ACME)
+    description: The current draft specification of the ACME protocol.
+    link: https://tools.ietf.org/html/draft-ietf-acme-acme-18
+  - module: acme_inspect
+    description: Allows to debug problems.
 extends_documentation_fragment:
   - acme
 options:
@@ -38,6 +48,29 @@ options:
     description:
       - "Path to the certificate to revoke."
     required: yes
+  account_key_src:
+    description:
+      - "Path to a file containing the ACME account RSA or Elliptic Curve
+         key."
+      - "RSA keys can be created with C(openssl rsa ...). Elliptic curve keys can
+         be created with C(openssl ecparam -genkey ...). Any other tool creating
+         private keys in PEM format can be used as well."
+      - "Mutually exclusive with C(account_key_content)."
+      - "Required if C(account_key_content) is not used."
+  account_key_content:
+    description:
+      - "Content of the ACME account RSA or Elliptic Curve key."
+      - "Note that exactly one of C(account_key_src), C(account_key_content),
+         C(private_key_src) or C(private_key_content) must be specified."
+      - "I(Warning): the content will be written into a temporary file, which will
+         be deleted by Ansible when the module completes. Since this is an
+         important private key — it can be used to change the account key,
+         or to revoke your certificates without knowing their private keys
+         —, this might not be acceptable."
+      - "In case C(cryptography) is used, the content is not written into a
+         temporary file. It can still happen that it is written to disk by
+         Ansible in the process of moving the module with its argument to
+         the node where it is executed."
   private_key_src:
     description:
       - "Path to the certificate's private key."
@@ -154,18 +187,16 @@ def main():
             result, info = account.send_signed_request(endpoint, payload, key_data=private_key_data, jws_header=jws_header)
         else:
             # Step 1: get hold of account URI
-            changed = account.init_account(
-                [],
-                allow_creation=False,
-                update_contact=False,
-            )
-            if changed:
-                raise AssertionError('Unwanted account change')
+            created, account_data = account.setup_account(allow_creation=False)
+            if created:
+                raise AssertionError('Unwanted account creation')
+            if account_data is None:
+                raise ModuleFailException(msg='Account does not exist or is deactivated.')
             # Step 2: sign revokation request with account key
             result, info = account.send_signed_request(endpoint, payload)
         if info['status'] != 200:
             already_revoked = False
-            # Standarized error in draft 14 (https://tools.ietf.org/html/draft-ietf-acme-acme-14#section-7.6)
+            # Standarized error from draft 14 on (https://tools.ietf.org/html/draft-ietf-acme-acme-18#section-7.6)
             if result.get('type') == 'urn:ietf:params:acme:error:alreadyRevoked':
                 already_revoked = True
             else:

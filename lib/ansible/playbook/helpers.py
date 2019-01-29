@@ -25,12 +25,9 @@ from ansible.errors import AnsibleParserError, AnsibleUndefinedVariable, Ansible
 from ansible.module_utils._text import to_native
 from ansible.module_utils.six import string_types
 from ansible.parsing.mod_args import ModuleArgsParser
+from ansible.utils.display import Display
 
-try:
-    from __main__ import display
-except ImportError:
-    from ansible.utils.display import Display
-    display = Display()
+display = Display()
 
 
 def load_list_of_blocks(ds, play, parent_block=None, role=None, task_include=None, use_handlers=False, variable_manager=None, loader=None):
@@ -250,7 +247,7 @@ def load_list_of_tasks(ds, play, block=None, role=None, task_include=None, use_h
                         # nested includes, and we want the include order printed correctly
                         display.vv("statically imported: %s" % include_file)
                     except AnsibleFileNotFound:
-                        if t.static or \
+                        if action != 'include' or t.static or \
                            C.DEFAULT_TASK_INCLUDES_STATIC or \
                            C.DEFAULT_HANDLER_INCLUDES_STATIC and use_handlers:
                             raise

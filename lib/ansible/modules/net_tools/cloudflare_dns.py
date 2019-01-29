@@ -87,6 +87,7 @@ options:
     description:
       - Whether the record should be the only one for that record type and record name. Only use with C(state=present)
       - This will delete all other records with the same record name and type.
+    type: bool
   state:
     description:
       - Whether the record(s) should exist or not
@@ -232,17 +233,17 @@ record:
         content:
             description: the record content (details depend on record type)
             returned: success
-            type: string
+            type: str
             sample: 192.0.2.91
         created_on:
             description: the record creation date
             returned: success
-            type: string
+            type: str
             sample: 2016-03-25T19:09:42.516553Z
         data:
             description: additional record data
             returned: success, if type is SRV, DS, SSHFP or TLSA
-            type: dictionary
+            type: dict
             sample: {
                 name: "jabber",
                 port: 8080,
@@ -255,27 +256,27 @@ record:
         id:
             description: the record id
             returned: success
-            type: string
+            type: str
             sample: f9efb0549e96abcb750de63b38c9576e
         locked:
             description: No documentation available
             returned: success
-            type: boolean
+            type: bool
             sample: False
         meta:
             description: No documentation available
             returned: success
-            type: dictionary
+            type: dict
             sample: { auto_added: false }
         modified_on:
             description: record modification date
             returned: success
-            type: string
+            type: str
             sample: 2016-03-25T19:09:42.516553Z
         name:
             description: the record name as FQDN (including _service and _proto for SRV)
             returned: success
-            type: string
+            type: str
             sample: www.sample.com
         priority:
             description: priority of the MX record
@@ -285,12 +286,12 @@ record:
         proxiable:
             description: whether this record can be proxied through cloudflare
             returned: success
-            type: boolean
+            type: bool
             sample: False
         proxied:
             description: whether the record is proxied through cloudflare
             returned: success
-            type: boolean
+            type: bool
             sample: False
         ttl:
             description: the time-to-live for the record
@@ -300,17 +301,17 @@ record:
         type:
             description: the record type
             returned: success
-            type: string
+            type: str
             sample: A
         zone_id:
             description: the id of the zone containing the record
             returned: success
-            type: string
+            type: str
             sample: abcede0bf9f0066f94029d2e6b73856a
         zone_name:
             description: the name of the zone containing the record
             returned: success
-            type: string
+            type: str
             sample: sample.com
 '''
 
@@ -320,6 +321,12 @@ from ansible.module_utils.basic import AnsibleModule
 from ansible.module_utils.six.moves.urllib.parse import urlencode
 from ansible.module_utils._text import to_native, to_text
 from ansible.module_utils.urls import fetch_url
+
+
+def lowercase_string(param):
+    if not isinstance(param, str):
+        return param
+    return param.lower()
 
 
 class CloudflareAPI(object):
@@ -337,11 +344,11 @@ class CloudflareAPI(object):
         self.key_tag = module.params['key_tag']
         self.port = module.params['port']
         self.priority = module.params['priority']
-        self.proto = module.params['proto']
+        self.proto = lowercase_string(module.params['proto'])
         self.proxied = module.params['proxied']
         self.selector = module.params['selector']
-        self.record = module.params['record']
-        self.service = module.params['service']
+        self.record = lowercase_string(module.params['record'])
+        self.service = lowercase_string(module.params['service'])
         self.is_solo = module.params['solo']
         self.state = module.params['state']
         self.timeout = module.params['timeout']
@@ -349,13 +356,16 @@ class CloudflareAPI(object):
         self.type = module.params['type']
         self.value = module.params['value']
         self.weight = module.params['weight']
-        self.zone = module.params['zone']
+        self.zone = lowercase_string(module.params['zone'])
 
         if self.record == '@':
             self.record = self.zone
 
         if (self.type in ['CNAME', 'NS', 'MX', 'SRV']) and (self.value is not None):
-            self.value = self.value.rstrip('.')
+            self.value = self.value.rstrip('.').lower()
+
+        if (self.type == 'AAAA') and (self.value is not None):
+            self.value = self.value.lower()
 
         if (self.type == 'SRV'):
             if (self.proto is not None) and (not self.proto.startswith('_')):
